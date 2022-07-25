@@ -1,12 +1,10 @@
-<template lang="">
+<template >
     <div>
-        
+        HOME
     </div>
 </template>
-<script>
-export default {
-    
-}
+<script setup>
+
 </script>
 <style lang="">
     

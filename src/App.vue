@@ -5,12 +5,12 @@
         <Toast
           :type="toastType"
           :message="toastMessage"
-          style="transform: translateX(-50%)"
+          style="transform: translateX(-50%); z-index: 5;"
         />
       </div>
     </Transition>
-    <NavigationBar/>
-    <div>
+    <NavigationBar style="z-index: 4;"/>
+    <div style="z-index: 3;">
       <router-view></router-view>
     </div>
   </main>

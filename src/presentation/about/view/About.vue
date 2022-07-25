@@ -1,6 +1,6 @@
-<template lang="">
+<template >
     <div>
-        
+        ABOUT
     </div>
 </template>
 <script>
