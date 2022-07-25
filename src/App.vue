@@ -19,7 +19,7 @@
 import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
 import { ref } from "@vue/reactivity";
-import { onMounted } from 'vue';
+import { onMounted, provide } from 'vue';
 
 const isToastVisible = ref(false)
 const toastMessage = ref('');
@@ -36,6 +36,7 @@ function displayToast(_message,_type){
         toastType.value = "";
     }, toastTime);
 }
+provide('toast',displayToast);
 </script>
 <style lang="scss">
 * {

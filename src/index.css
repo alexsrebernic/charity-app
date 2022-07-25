@@ -1,3 +1,299 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+@import 'tailwindcss/base';
+
+@import 'tailwindcss/components';
+
+@import 'tailwindcss/utilities';
+
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0.2)
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+
+ol,
+ul {
+	list-style: none;
+}
+
+blockquote,
+q {
+	quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+/*-- UTILITIES *--/
+/* Hide scrollbar for Chrome, Safari and Opera */
+.sb-hide::-webkit-scrollbar {
+	display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.sb-hide {
+	-ms-overflow-style: none;
+	/* IE and Edge */
+	scrollbar-width: none;
+	/* Firefox */
+}
+
+
+.firebase-emulator-warning {
+	top: 0;
+	height: 30px;
+	width: 200px !important;
+	overflow: hidden;
+}
+
+/*-- VUE TRANSITIONS --*/
+
+.list-enter-active {
+	transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+	transform: translateY(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+	position: absolute;
+}
+
+/* slide in left to right */
+.slide-in-ltr-enter-active,
+.slide-in-ltr-leave-active {
+	transition: all 1s ease;
+}
+
+.slide-in-ltr-enter-from {
+	opacity: 0;
+	transform: translateX(-100%);
+}
+
+.slide-in-ltr-enter-to,
+.slide-in-ltr-leave-from {
+	opacity: 1;
+	transform: translateX(0%);
+}
+
+.slide-in-ltr-leave-to {
+	opacity: 0;
+	transform: translateX(100%);
+}
+
+/* slide down*/
+.slide-down-enter-active,
+.slide-down-leave-active {
+	transition: all 1s ease;
+}
+
+.slide-down-enter-from {
+	opacity: 0;
+	transform: translateY(-100%);
+}
+
+.slide-down-enter-to,
+.slide-down-leave-from {
+	opacity: 1;
+	transform: translateY(0%);
+}
+
+.slide-down-leave-to {
+	opacity: 0;
+	transform: translateY(100%);
+}
+
+/* slide up*/
+.dropdown-enter-active,
+.dropdown-leave-active {
+	transition: all 0.3s ease;
+}
+
+.dropdown-enter-from {
+	opacity: 0;
+	transform: translateY(-100%);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+	opacity: 1;
+	transform: translateY(0%);
+}
+
+.dropdown-leave-to {
+	opacity: 0;
+	transform: translateY(-100%);
+}
+
+/* fade in */
+.fade-enter-active,
+.fade-leave-active {
+	transition: all 100ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+	opacity: 1;
+}
+
+/* grow */
+.grow-enter-active,
+.grow-leave-active {
+	transition: all 0.2s ease;
+}
+
+.grow-enter-from {
+	transform: scale(0%);
+}
+
+.grow-enter-to,
+.grow-leave-from {
+	transform: scale(100%);
+}
+
+.grow-leave-to {
+	transform: scale(0%);
+}
+
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+  height: auto;
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+  position: absolute;
+}
