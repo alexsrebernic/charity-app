@@ -37,4 +37,11 @@ const router = createRouter({
     routes,
 });
 
+router.beforeEach((to, from, next) => {
+    if (to.path === "/") {
+      next("/home");
+      return;
+    }
+    next();
+});
 export default router
