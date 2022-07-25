@@ -2,7 +2,7 @@
 <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900">
   <div class="container flex flex-wrap justify-between items-center mx-auto">
   <a href="/home" class="flex items-center">
-      <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white ">CryptoFundme</span>
+      <span class="self-center text-xl font-semibold whitespace-nowrap hover:text-blue-700 transition dark:text-white ">CryptoFund</span>
   </a>
   <div class="flex md:order-2 sm:space-x-2">
     
