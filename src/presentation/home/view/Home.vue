@@ -1,8 +1,6 @@
 <template >
-    <div>
-        <div class="container max-w-8xl m-auto">
-            ads
-        </div>
+    <div class="pt-12">
+        
     </div>
 </template>
 <script setup>
