@@ -162,6 +162,22 @@ table {
 }
 
 /*-- VUE TRANSITIONS --*/
+.toast-enter-active,
+.toast-leave-active {
+	transition: all 1s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+	opacity: 0;
+	transform: translateY(-100%);
+}
+
+.toast-enter-to,
+.toast-leave-from {
+	opacity: 1;
+	transform: translateY(0%);
+}
 
 .list-enter-active {
 	transition: all 0.5s ease;

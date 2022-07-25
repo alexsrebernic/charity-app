@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        
+        DOCUMENTATION
     </div>
 </template>
 <script>
