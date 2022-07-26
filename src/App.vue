@@ -19,8 +19,7 @@
 import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
 import { ref } from "@vue/reactivity";
-import { onMounted, provide } from 'vue';
-
+import { inject, onMounted, provide } from 'vue';
 const isToastVisible = ref(false)
 const toastMessage = ref('');
 const toastType = ref('');

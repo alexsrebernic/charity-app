@@ -1,17 +1,14 @@
-const MORALIS_APP_ID = process.env.VUE_APP_MORALIS_APP_ID;
-const MORALIS_KEY = process.env.VUE_APP_MORALIS_KEY;
-const MOLARIS_SERVER_URL = process.env.VUE_APP_MOLARIS_SERVER_URL;
+const MORALIS_APP_ID = import.meta.env.VITE_APP_MORALIS_APP_ID;
+const MORALIS_KEY = import.meta.env.VITE_APP_MORALIS_KEY;
+const MOLARIS_SERVER_URL = import.meta.env.VITE_APP_MOLARIS_SERVER_URL;
 
 const MoralisFactory = (function() {
-    const Moralis = require('moralis');
-
-    function MoralisInstance(applicationId, javascriptKey, url) {
-        Moralis.initialize(
-            applicationId,
-            javascriptKey,
+    function MoralisInstance(appId, serverUrl) {
+        Moralis.start({
+            serverUrl,
+            appId,
+        }
         );
-
-        Moralis.serverURL = url;
 
         return Moralis;
     }
@@ -21,7 +18,7 @@ const MoralisFactory = (function() {
     return {
         getInstance: function() {
             if (instance == null) {
-                instance = MoralisInstance(MORALIS_APP_ID, MORALIS_KEY, MOLARIS_SERVER_URL);
+                instance = MoralisInstance(MORALIS_APP_ID,  MOLARIS_SERVER_URL);
                 instance.constructor = null;
             }
             return instance;

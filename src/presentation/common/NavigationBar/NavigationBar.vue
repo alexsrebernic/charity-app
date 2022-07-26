@@ -5,8 +5,25 @@
       <span class="self-center text-xl font-semibold whitespace-nowrap hover:text-blue-700 transition dark:text-white ">CryptoFund</span>
   </a>
   <div class="flex md:order-2 sm:space-x-2">
-    
-    <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Connect Wallet</button>
+    <div v-if="Object.keys(user || null).length === 0">
+      <button  @click="login('desktop')" type="button" class="text-white hidden lg:block bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Connect Wallet
+      </button>
+      <button @click="login('mobile')"  class="text-white shadow-md  lg:hidden bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
+          Connect Wallet
+      </button>
+    </div>
+    <div v-else>
+      <button @click="isUserDropdownShowing = !isUserDropdownShowing" v-if="user" class="text-black border shadow-md  bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-none dark:hover:bg-white dark:focus:ring-white dark:text-white" >
+        {{user.attributes.ethAddress.slice(0,6)}}...{{user.attributes.ethAddress.slice(user.attributes.ethAddress.length - 4)}}
+      </button>
+      <Transition name="fade">
+        <div @click="logout" v-if="isUserDropdownShowing" class="absolute w-32 cursor-pointer text-black border shadow-md  bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-300 my-2 rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-none dark:hover:bg-white dark:focus:ring-white dark:text-white "  >
+              Log out
+        </div>
+      </Transition>
+      
+    </div>
+   
     <button @click="isBurguerMenuShowing = !isBurguerMenuShowing" data-collapse-toggle="navbar-cta" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-cta" aria-expanded="false">
         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
     </button>
@@ -71,10 +88,42 @@
 </template>
 <script setup>
 import { ref } from "@vue/reactivity";
+import { inject, onMounted } from "@vue/runtime-core";
+import { useUserStore } from "../../../store/userStore";
 import NavLink from "./NavLink.vue";
 const isBurguerMenuShowing = ref(false)
+const isUserDropdownShowing = ref(false)
+const user = ref({})
+const userStore = useUserStore()
+const displayToast = inject("toast")
 
+onMounted(() => {
+  const _user  = userStore.getUser
+  if(_user) user.value = _user
+})
 
+async function login(method){
+  try {
+    userStore.logIn(method).then( _user => {
+      user.value = _user
+    })
+  } catch ( error ) {
+    displayToast( `Something goes wrong when log in user: ${error}`, "error")
+    console.error(error)
+  }
+}
+async function logout() {
+  try {
+    userStore.logOut()
+    .finally(() => {
+      user.value = {};
+      isUserDropdownShowing.value = false;
+    })
+  } catch( error ) {
+    displayToast( `Something goes wrong when login out user ${user.value.attributes.ethAddress}: ${error}`,'error')
+    console.error(error)
+  }
+}
 
 </script>
 <style lang="scss" scoped>
