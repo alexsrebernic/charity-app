@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
-    state: () => ({ user: null }),
+    state: () => ({ user: {} }),
     getters: {
       getUser: (state) => state.user,
     },
     actions: {
-      setUser(_user){
-        this.user = _user
+      setCurrentUser(){
+        this.user = Moralis.User.current();
       },
       removeUser(){
-        this.user = null
+        this.user = {}
       },
       async authenticateWithMetamask(){
       return new Promise( async ( resolve, reject ) => {
@@ -58,11 +58,11 @@ export const useUserStore = defineStore('user', {
                 signingMessage: "Log in using Moralis",
               })
             }
-            this.setUser(user)
+            this.setCurrentUser()
             console.log(`User with address ${user.attributes.ethAddress} connected`);
             resolve(user)
           } else {
-            this.setUser(user)
+            this.setCurrentUser()
             resolve(user)
           }
         })
@@ -70,10 +70,10 @@ export const useUserStore = defineStore('user', {
       async logOut() {
         return new Promise( async ( resolve, reject ) => {
           await Moralis.User.logOut();
-          console.log(`User with address ${this.user.attributes.ethAddress} disconnected`);
+          console.log(`User disconnected`);
           this.removeUser()
           resolve()
         })
-      }
+      },
     },
 })

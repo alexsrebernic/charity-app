@@ -9,7 +9,6 @@ const MoralisFactory = (function() {
             appId,
         }
         );
-
         return Moralis;
     }
 

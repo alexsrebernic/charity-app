@@ -20,11 +20,18 @@ import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
 import { ref } from "@vue/reactivity";
 import { inject, onMounted, provide } from 'vue';
+import { useUserStore } from './store/userStore';
 const isToastVisible = ref(false)
 const toastMessage = ref('');
 const toastType = ref('');
 const toastTime = 3000;
-
+const Moralis = inject('moralis')
+const userStore = useUserStore()
+ Moralis.onAccountChanged(async ( account ) => {
+    userStore.removeUser()
+    await userStore.logOut()
+    window.location.reload()
+  })
 function displayToast(_message,_type){
     toastMessage.value = _message;
     toastType.value = _type;

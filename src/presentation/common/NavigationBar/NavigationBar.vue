@@ -88,7 +88,7 @@
 </template>
 <script setup>
 import { ref } from "@vue/reactivity";
-import { inject, onMounted } from "@vue/runtime-core";
+import { inject, onMounted, watch } from "@vue/runtime-core";
 import { useUserStore } from "../../../store/userStore";
 import NavLink from "./NavLink.vue";
 const isBurguerMenuShowing = ref(false)
@@ -97,16 +97,13 @@ const user = ref({})
 const userStore = useUserStore()
 const displayToast = inject("toast")
 
-onMounted(() => {
-  const _user  = userStore.getUser
-  if(_user) user.value = _user
+watch(() => userStore.user, (newUser) => {
+  user.value = newUser
 })
 
 async function login(method){
   try {
-    userStore.logIn(method).then( _user => {
-      user.value = _user
-    })
+    await userStore.logIn(method)
   } catch ( error ) {
     displayToast( `Something goes wrong when log in user: ${error}`, "error")
     console.error(error)
