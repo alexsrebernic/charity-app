@@ -27,11 +27,11 @@ const toastType = ref('');
 const toastTime = 3000;
 const Moralis = inject('moralis')
 const userStore = useUserStore()
- Moralis.onAccountChanged(async ( account ) => {
-    userStore.removeUser()
-    await userStore.logOut()
-    window.location.reload()
-  })
+Moralis.onAccountChanged(async ( account ) => {
+  userStore.removeUser()
+  await userStore.logOut()
+  window.location.reload()
+})
 function displayToast(_message,_type){
     toastMessage.value = _message;
     toastType.value = _type;
