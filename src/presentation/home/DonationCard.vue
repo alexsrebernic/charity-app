@@ -1,5 +1,5 @@
 <template >
-    <div class="px-7 py-8 shadow-xl rounded-xl border-blue-700" style="width:300px;height:400px;border:1px solid black;">
+    <div class="px-7 flex flex-col justify-between  py-8 shadow-xl rounded-xl border-blue-700" style="width:300px;height:300px;border:1px solid black;">
         <div class="flex justify-between">
             <div class="">
                 <h1 class="font-bold text-blue-700 text-2xl">{{data.first_name}} {{data.last_name}}</h1>
@@ -14,19 +14,25 @@
                 :alt="`${data.first_name}'s avatar'`">
             </div>
         </div>
-        <div>
+        <div class="h-full flex flex-col justify-between py-2">
             <div>
-                {{data.details}}
+                <p>
+                    {{data.details}}
+                </p>
+            </div>
+            <div class="flex space-x-1 items-center">
+                <span class="font-medium">Total donated: </span>
+                <span class="text-blue-700 font-medium">{{data.total_donated}}$</span>
+                <span>
+                    <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
+                </span>
             </div>
         </div>
         <div>
-            <span>Total donated:</span>
-            <span>{{data.total_donated}}</span>
-        </div>
-        <div>
             <div class="flex justify-center">
-                <div class="mb-3 xl:w-96">
+                <div class="w-1/2">
                     <input
+                    min="1"
                     type="number"
                     class="
                         form-control
@@ -39,19 +45,19 @@
                         text-gray-700
                         bg-white bg-clip-padding
                         border border-solid border-gray-300
-                        rounded
                         transition
                         ease-in-out
                         m-0
-                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        focus:text-gray-700 focus:bg-white focus:border-blue-700 focus:outline-none
+                        rounded-l-lg
                     "
                     id="exampleTel0"
                     placeholder="$"
                     />
                 </div>
-                <div>
-                    <button>
-                        Donate!
+                <div class="w-1/2">
+                    <button class="w-full text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Fund!
                     </button>
                 </div>
             </div>
@@ -59,6 +65,8 @@
     </div>
 </template>
 <script setup>
+import { Icon } from '@iconify/vue';
+
 const props = defineProps({
     data: Object
 })

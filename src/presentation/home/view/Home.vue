@@ -1,7 +1,8 @@
 <template >
-    <div class="pt-12">
-        <div class="px-5 md:w-3/4 mx-auto">
-            <h1 class="text-2xl font-medium">Here you can donate to anyone else in cryptocurrencies, or you can create a "can" and receive donations, all of this in <span class="text-blue-700 underline">cryptocurrencies</span></h1>
+    <div class="md:w-3/4 mx-auto pt-12">
+        <div class="px-5 md:px-0 ">
+            <h1 class="text-2xl font-medium">Here you can donate to anyone else in cryptocurrencies, or you can create a "can" and receive donations, all of this in <span class="text-blue-700 underline">cryptocurrencies</span>.</h1>
+            <h1 class="text-2xl font-medium">The assets you can use are <span class="text-blue-700 underline">ETH</span> or <span class="text-blue-700 underline">BNB</span> depending on the network you are, and please try to be in the test networks, if you donate real money it will <span class="text-red-600">disappear</span>.</h1>
         </div>
         <div>
             <DonationCard :data="donation"/>
@@ -31,7 +32,7 @@ const donation = ref({
     total_donated: 320,
     created_at: '26/7/2022',
     last_donated_address: "0x59583810eb074ccc5c26397c621a27ac11889225",
-    details: 'Hello world'
+    details: '¡Hello world!'
 })
 </script>
 <style lang="">
