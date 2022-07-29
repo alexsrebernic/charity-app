@@ -50,6 +50,19 @@ provide('toast',displayToast);
   padding: 0;
   box-sizing: border-box;
 }
-
+.shadow-item-card{
+box-shadow:
+  0px 0px 1.6px rgba(0, 0, 0, 0.004),
+  0px 0px 3.7px rgba(0, 0, 0, 0.008),
+  0px 0px 6.2px rgba(0, 0, 0, 0.013),
+  0px 0px 9.1px rgba(0, 0, 0, 0.019),
+  0px 0px 12.6px rgba(0, 0, 0, 0.022),
+  0px 0px 16.6px rgba(0, 0, 0, 0.024),
+  0px 0px 21.3px rgba(0, 0, 0, 0.026),
+  0px 0px 26.9px rgba(0, 0, 0, 0.028),
+  0px 0px 34.3px rgba(0, 0, 0, 0.029),
+  0px 0px 51px rgba(0, 0, 0, 0.03)
+;
+}
 
 </style>

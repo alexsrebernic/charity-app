@@ -1,5 +1,5 @@
 <template >
-    <div class="px-7 flex flex-col justify-between  py-8 shadow-xl rounded-xl border-blue-700" style="width:300px;height:300px;border:1px solid black;">
+    <div class="px-7 flex flex-col justify-between  py-8 shadow-item-card rounded-xl " style="width:300px;height:300px;">
         <div class="flex justify-between">
             <div class="">
                 <h1 class="font-bold text-blue-700 text-2xl">{{data.first_name}} {{data.last_name}}</h1>
@@ -10,13 +10,13 @@
                 class="rounded-full"
                 :src=" data.avatar? 
                 data.avatar:
-                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}`" 
+                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=${data.avatar_color?data.avatar_color:'d1d5da'}`" 
                 :alt="`${data.first_name}'s avatar'`">
             </div>
         </div>
         <div class="h-full flex flex-col justify-between py-2">
-            <div>
-                <p>
+            <div  class="  overflow-y-auto mb-4" style="height:96px">
+                <p class=" " >
                     {{data.details}}
                 </p>
             </div>
