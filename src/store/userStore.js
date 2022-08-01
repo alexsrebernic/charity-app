@@ -38,12 +38,12 @@ export const useUserStore = defineStore('user', {
       
       },
       
-      logIn(method){
+      logIn(){
         return new Promise( async ( resolve, reject ) => {
           if(typeof web3 === 'undefined') throw Error('No metamask founded!');
           let user = Moralis.User.current();
           if(!user){
-            if(method === 'mobile'){
+            if(deviceType() == 'mobile' || deviceType() == 'tablet'){
               user = await Moralis.authenticate({ provider: "walletconnect",
                 mobileLinks: [
                 "rainbow",
@@ -77,3 +77,14 @@ export const useUserStore = defineStore('user', {
       },
     },
 })
+
+const deviceType = () => {
+  const ua = navigator.userAgent;
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+      return "tablet";
+  }
+  else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+      return "mobile";
+  }
+  return "desktop";
+};

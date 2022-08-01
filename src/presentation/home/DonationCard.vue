@@ -32,6 +32,7 @@
             <div class="flex justify-center">
                 <div class="w-1/2">
                     <input
+                    v-model="amount"
                     min="1"
                     type="number"
                     class="
@@ -56,8 +57,8 @@
                     />
                 </div>
                 <div class="w-1/2">
-                    <button class="w-full text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Fund!
+                    <button @click="fund" class="w-full text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Fund
                     </button>
                 </div>
             </div>
@@ -66,10 +67,28 @@
 </template>
 <script setup>
 import { Icon } from '@iconify/vue';
+import { ref } from '@vue/reactivity';
+import { inject, defineEmits } from '@vue/runtime-core';
+import { useUserStore } from '../../store/userStore';
 
+const amount = ref(0)
+const displayToast = inject('toast')
+
+const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
-    data: Object
-})
+    data: Object,
+    isUserWalletConnected: Boolean
+}) 
+
+async function fund(){
+    if(!props.isUserWalletConnected){
+        await useUserStore().logIn();
+        emits('changeUserWalletState')
+    }
+    if(amount.value == 0) return 
+}
+
+
 </script>
 <style lang="">
     

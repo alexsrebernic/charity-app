@@ -1,5 +1,5 @@
 <template >
-    <div @click="!isCreatingCan?isCreatingCan = !isCreatingCan:''"  :class="!isCreatingCan?'hover:bg-blue-800 bg-blue-700   ':'bg-white'" class="px-7 py-8 shadow-item-card rounded-xl transition" style="width:300px;height:300px;">
+    <div @click="createCan"  :class="!isCreatingCan?'hover:bg-blue-800 bg-blue-700   ':'bg-white'" class="px-7 py-8 shadow-item-card rounded-xl transition" style="width:300px;height:300px;">
         <div v-if="isCreatingCan">
             <div class="flex justify-between">
                 <div class=" space-y-2 pr-2">
@@ -75,7 +75,7 @@
                 placeholder="Your message..." ></textarea>
             </div>
             <div>
-                <button @click="createDonationCard" class="w-full text-white py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <button @click="submitDonationCard" class="w-full text-white py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     Create
                 </button>
             </div>
@@ -89,19 +89,46 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 import { reactive, ref } from '@vue/reactivity';
-import { inject } from '@vue/runtime-core';
+import { inject, onMounted, watch, defineEmits } from '@vue/runtime-core';
 import {
     useDonationsCardsStore
 } from '../../store/donationCardsStore'
+import { useUserStore } from "../../store/userStore";
+
 const isCreatingCan = ref(false)
 const donationsCardsStore = useDonationsCardsStore()
+const userStore = useUserStore()
 const displayToast = inject('toast')
 const data = reactive({
     avatar_color:'',
     first_name:'',
     last_name:'',
     details:'',
+}) 
+
+const emits = defineEmits(['changeUserWalletState'])
+const props = defineProps({
+    isUserWalletConnected: Boolean
 })
+watch(() => props.isUserWalletConnected,(value) => {
+    if(!value) isCreatingCan.value = false
+})
+
+async function createCan(){
+    try {
+        if(props.isUserWalletConnected){
+            if(!isCreatingCan.value) return isCreatingCan.value = true;
+        } else {
+            await userStore.logIn()
+            emits('changeUserWalletState')
+            isCreatingCan.value = true
+        }
+    } catch (error){
+        displayToast(error,'error')
+        console.error(error)
+    }
+   
+}
 
 function changeAvatarColor(){
     const input = document.createElement('input')
@@ -111,18 +138,18 @@ function changeAvatarColor(){
         data.avatar_color = input.value
     }
 }
-function createDonationCard(){
-    console.log(data)
+function submitDonationCard(){
+    if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
     donationsCardsStore.createUserDonationCard(data)
 }
 </script>
 <style lang="scss">
-    .hover-display-icon:hover {
-        .icon {
-            display: block;
-        }
-        .text {
-            display: none;
-        }
+.hover-display-icon:hover {
+    .icon {
+        display: block;
     }
+    .text {
+        display: none;
+    }
+}
 </style>
