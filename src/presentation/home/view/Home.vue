@@ -1,6 +1,6 @@
 <template >
-    <div class="md:w-5/6 mx-auto pt-12">
-       
+    <div class="md:w-5/6 mx-auto ">
+        <SelectNetwork/>
         <div class="mt-6  gap-y-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <UserCard 
             @changeUserWalletState="changeUserWalletState"  
@@ -20,6 +20,7 @@
 import { inject, onMounted, watch } from "@vue/runtime-core";
 import DonationCard from "../DonationCard.vue";
 import UserCard from "../UserCreateCard.vue";
+import SelectNetwork from "../SelectNetwork.vue";
 import { ref } from "vue";
 import { useUserStore } from "../../../store/userStore";
 

@@ -9,6 +9,7 @@
         />
       </div>
     </Transition>
+    <WarningHeader />
     <NavigationBar style="z-index: 4;"/>
     <div style="z-index: 3;" class="container max-w-8xl m-auto">
       <router-view></router-view>
@@ -18,6 +19,7 @@
 <script setup>
 import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
+import WarningHeader from './presentation/common/WarningHeader.vue';
 import { ref } from "@vue/reactivity";
 import { inject, onMounted, provide } from 'vue';
 import { useUserStore } from './store/userStore';
