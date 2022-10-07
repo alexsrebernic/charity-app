@@ -108,7 +108,8 @@ const data = reactive({
 
 const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
-    isUserWalletConnected: Boolean
+    isUserWalletConnected: Boolean,
+    selectedNetwork: String
 })
 watch(() => props.isUserWalletConnected,(value) => {
     if(!value) isCreatingCan.value = false
@@ -118,6 +119,7 @@ async function createCan(){
     try {
         if(props.isUserWalletConnected){
             if(!isCreatingCan.value) return isCreatingCan.value = true;
+          
         } else {
             await userStore.logIn()
             emits('changeUserWalletState')
@@ -139,8 +141,15 @@ function changeAvatarColor(){
     }
 }
 function submitDonationCard(){
-    if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
-    donationsCardsStore.createUserDonationCard(data)
+    if(
+    (props.selectedNetwork === 'Binance-testnet' && userStore.currentUserNetwork === '61') || 
+    (props.selectedNetwork === 'Rinkeby' && userStore.currentUserNetwork == '4')){
+        if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
+        donationsCardsStore.createUserDonationCard(data)
+    } else {
+        return displayToast(`You aren't in the ${props.selectedNetwork} network, please change to the selected testnet `,'error')
+    }
+  
 }
 </script>
 <style lang="scss">

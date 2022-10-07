@@ -9,7 +9,7 @@
             </button>
             <div id="dropdown-states" v-if="collapseSelect" class=" z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="states-button">
-                    <li v-for="(network,index) in networks" :key="index">
+                    <li v-for="(network,index) in avalaibleNetworks" :key="index">
                         <button @click="changeNetwork(network)" type="button" class="inline-flex py-2 px-4 w-full text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white">
                             <div class="inline-flex items-center">
                                 <Icon icon="cryptocurrency:eth" width="25" class="mr-1"  v-if="network == 'Rinkeby'" />
@@ -31,19 +31,24 @@ import { onMounted } from "@vue/runtime-core";
 import { useUserStore } from "../../store/userStore";
 const userStore = useUserStore()
 const currentNetwork = ref("Rinkeby");
-const networks = ref(["Rinkeby","Binance-testnet"])
-
+const avalaibleNetworks = ref(["Rinkeby","Binance-testnet"])
+const collapseSelect = ref(false)
+const emits = defineEmits(['changeSelectedNetwork'])
 onMounted(() => {
-    networks.value = networks.value.filter(value => value !== currentNetwork.value)  
+    if(userStore.currentUserNetwork == 61){
+        currentNetwork.value = "Binance-testnet"
+    } else {
+        currentNetwork.value = "Rinkeby"
+    }
+    avalaibleNetworks.value = avalaibleNetworks.value.filter(value => value !== currentNetwork.value)  
 })
 
-const collapseSelect = ref(false)
 function changeNetwork( newNetwork ){
-    networks.value.push(currentNetwork.value)
+    avalaibleNetworks.value.push(currentNetwork.value)
     currentNetwork.value = newNetwork
-    networks.value = networks.value.filter(value => value !== newNetwork)  
+    avalaibleNetworks.value = avalaibleNetworks.value.filter(value => value !== newNetwork)  
     collapseSelect.value = false
-    userStore.currentUserNetwork = newNetwork
+    emits('changeSelectedNetwork', newNetwork)
 }
 </script>
 <style lang="">

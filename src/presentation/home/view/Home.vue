@@ -1,15 +1,17 @@
 <template >
     <div class="md:w-5/6 mx-auto ">
-        <SelectNetwork/>
+        <SelectNetwork @changeSelectedNetwork="changeSelectedNetwork"/>
         <div class="mt-6  gap-y-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             <UserCard 
             @changeUserWalletState="changeUserWalletState"  
             :isUserWalletConnected="isUserWalletConnected"
+            :selectedNetwork="selectedNetwork"
             class="mx-auto"
             />
             <DonationCard 
             @changeUserWalletState="changeUserWalletState" 
             :isUserWalletConnected="isUserWalletConnected" 
+            :selectedNetwork="selectedNetwork"
             :data="donation"
             class="mx-auto" 
             />
@@ -26,13 +28,12 @@ import { useUserStore } from "../../../store/userStore";
 
 const userStore = useUserStore()
 const isUserWalletConnected = ref(false)
-
+const selectedNetwork = ref('')
 watch(() => userStore.user, (newUser) => {
     if(Object.entries(newUser).length > 0){
-         isUserWalletConnected.value = true
+        isUserWalletConnected.value = true
         console.log(newUser,'connected')
     } else {
-        console.log(newUser,'disconnected')
         isUserWalletConnected.value = false
     }
 })
@@ -44,7 +45,9 @@ onMounted(() => {
 function changeUserWalletState(){
     isUserWalletConnected.value = !isUserWalletConnected.value
 }
-
+function changeSelectedNetwork(value){
+    selectedNetwork.value = value
+}
 const displayToast = inject('toast')
 const donations = ref([])
 const donation = ref({

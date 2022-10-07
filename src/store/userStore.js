@@ -38,8 +38,6 @@ export const useUserStore = defineStore('user', {
             }
             this.setCurrentUser()
             console.log(`User with address ${user.attributes.ethAddress} connected`);
-            console.log(user)
-            console.log(user.attributes)
             resolve(user)
           } else {
             this.setCurrentUser()

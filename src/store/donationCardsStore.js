@@ -3,8 +3,8 @@ import { defineStore } from 'pinia'
 export const useDonationsCardsStore = defineStore('donations_cards', {
     state: () => (
         { 
-        "binance-testnet": [],
-        "rinkeby":[] 
+        "Binance-testnet": [],
+        "Rinkeby":[] 
         }
         ),
     getters: {
@@ -21,11 +21,4 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
             this[network] = this[network].filter(card => card.owner != owner_address)
         }
     },
-    actions: {
-        async createUserDonationCard(_data){
-            let data = _data;
-            if(!data.avatar_color) data.avatar_color = "#d1d5da"
-            data.avatar_color.slice(1)
-        }
-    }
 })

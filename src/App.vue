@@ -27,13 +27,34 @@ const isToastVisible = ref(false)
 const toastMessage = ref('');
 const toastType = ref('');
 const toastTime = 3000;
-const Moralis = inject('moralis')
 const userStore = useUserStore()
-Moralis.onAccountChanged(async ( account ) => {
+const avalaibleNetworks = {
+  "4":"Rinkeby",
+  "61":"Binance Smart Chain Testnet",
+}
+
+window.ethereum.on('accountsChanged', async (accounts) => {
   userStore.removeUser()
   await userStore.logOut()
   window.location.reload()
 })
+
+window.ethereum.on("chainChanged", async (chain) => {
+  window.location.reload();
+});
+onMounted(async () => {
+  await checkWeb3()
+})
+
+async function checkWeb3(){
+  const ethereum = window.ethereum
+  if(!ethereum || !ethereum.on){
+    displayToast("This web app requires Metamask, please install Metamask",'error')
+  } else {
+    userStore.currentUserNetwork = window.ethereum.chainId.slice(2)
+  }
+}
+
 function displayToast(_message,_type){
     toastMessage.value = _message;
     toastType.value = _type;
@@ -45,6 +66,8 @@ function displayToast(_message,_type){
     }, toastTime);
 }
 provide('toast',displayToast);
+provide('avalaibleNetworks',avalaibleNetworks)
+
 </script>
 <style lang="scss">
 * {
