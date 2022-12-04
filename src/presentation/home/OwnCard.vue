@@ -1,6 +1,7 @@
 <template >
     <div class="px-7 flex flex-col justify-between  py-8   shadow  rounded-xl " style="width:300px;height:300px;">
-        <div class="flex justify-between ">
+        <div class="flex justify-between flex-">
+            
             <div class="">
                 <h1 class="font-bold text-blue-700 text-2xl">{{data.first_name}} {{data.last_name}}</h1>
                 <span v-if="data.createdAt" class="text-sm font-semibold text-gray-400">Created: {{getCreatedAtDate(data.createdAt)}}</span>
@@ -28,9 +29,7 @@
                 </span>
                 <span title="Total Donated" class="font-medium truncate">Total donated: </span>
                 <span class="text-blue-700 font-medium">{{data.current_balance}}$</span>
-                <span>
-                    <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
-                </span>
+              
             </div>
         </div>
         <div>
@@ -112,9 +111,9 @@ async function withdraw(){
 		#42A5F5
 	);
 }
-    .shadow {
-	position: relative;
-	background: white;
+.shadow {
+position: relative;
+background: white;
 }
 .shadow:before,
 .shadow:after {

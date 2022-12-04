@@ -7,8 +7,10 @@
             :isUserWalletConnected="isUserWalletConnected"
             :selectedNetwork="selectedNetwork"
             class="mx-auto"
+            v-if="!userHaveCan"
             />
             <OwnCard
+            v-else
             class="mx-auto"
             :data="ownCardData"
             />
