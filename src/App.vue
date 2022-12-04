@@ -20,18 +20,17 @@
 import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
 import WarningHeader from './presentation/common/WarningHeader.vue';
+import avalaibleNetworks from "./utils/networksData"
 import { ref } from "@vue/reactivity";
 import { inject, onMounted, provide } from 'vue';
+import { connectToFirebaseEmulator } from '../firebase.config';
 import { useUserStore } from './store/userStore';
 const isToastVisible = ref(false)
 const toastMessage = ref('');
 const toastType = ref('');
 const toastTime = 3000;
 const userStore = useUserStore()
-const avalaibleNetworks = {
-  "4":"Rinkeby",
-  "61":"Binance Smart Chain Testnet",
-}
+
 
 window.ethereum.on('accountsChanged', async (accounts) => {
   userStore.removeUser()
@@ -44,6 +43,10 @@ window.ethereum.on("chainChanged", async (chain) => {
 });
 onMounted(async () => {
   await checkWeb3()
+  if (process.env.NODE_ENV !== 'production' &&
+  process.env.NODE_ENV !== 'test' &&
+  typeof console !== 'undefined'
+  ) connectToFirebaseEmulator()
 })
 
 async function checkWeb3(){
@@ -51,7 +54,7 @@ async function checkWeb3(){
   if(!ethereum || !ethereum.on){
     displayToast("This web app requires Metamask, please install Metamask",'error')
   } else {
-    userStore.currentUserNetwork = window.ethereum.chainId.slice(2)
+    userStore.currentUserNetworkId = window.ethereum.chainId.slice(2)
   }
 }
 

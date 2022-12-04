@@ -9,7 +9,7 @@
             </button>
             <div id="dropdown-states" v-if="collapseSelect" class=" z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
                 <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="states-button">
-                    <li v-for="(network,index) in avalaibleNetworks" :key="index">
+                    <li v-for="(network,index) in avalaibleNetworksArray" :key="index">
                         <button @click="changeNetwork(network)" type="button" class="inline-flex py-2 px-4 w-full text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white">
                             <div class="inline-flex items-center">
                                 <Icon icon="cryptocurrency:eth" width="25" class="mr-1"  v-if="network == 'Goerli'" />
@@ -26,26 +26,26 @@
 <script setup>
 import { ref } from "@vue/reactivity";
 import { Icon } from '@iconify/vue';
-import { onMounted } from "@vue/runtime-core";
+import { inject, onMounted } from "@vue/runtime-core";
 import { useUserStore } from "../../store/userStore";
 const userStore = useUserStore()
-const currentNetwork = ref("Goerli");
-const avalaibleNetworks = ref(["Goerli","Binance-testnet"])
+const currentNetwork = ref("");
+const avalaibleNetworks = inject("avalaibleNetworks")
+const avalaibleNetworksArray = ref(["Goerli","Binance-testnet"])
 const collapseSelect = ref(false)
 const emits = defineEmits(['changeSelectedNetwork'])
 onMounted(() => {
-    if(userStore.currentUserNetwork == 61){
-        currentNetwork.value = "Binance-testnet"
+    if(avalaibleNetworks[userStore.currentUserNetworkId]) {
+        changeNetwork(avalaibleNetworks[userStore.currentUserNetworkId].name)
     } else {
-        currentNetwork.value = "Goerli"
+        changeNetwork("Goerli")
     }
-    avalaibleNetworks.value = avalaibleNetworks.value.filter(value => value !== currentNetwork.value)  
 })
 
 function changeNetwork( newNetwork ){
-    avalaibleNetworks.value.push(currentNetwork.value)
+    if(currentNetwork.value) avalaibleNetworksArray.value.push(currentNetwork.value)
     currentNetwork.value = newNetwork
-    avalaibleNetworks.value = avalaibleNetworks.value.filter(value => value !== newNetwork)  
+    avalaibleNetworksArray.value = avalaibleNetworksArray.value.filter(value => value !== newNetwork)  
     collapseSelect.value = false
     emits('changeSelectedNetwork', newNetwork)
 }

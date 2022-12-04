@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "crypto-fund-28c9f"
-  }
+    "default": "test-firestore-2e03e",
+    "test": "test-firestore-2e03e"
+  },
+  "targets": {},
+  "etags": {}
 }

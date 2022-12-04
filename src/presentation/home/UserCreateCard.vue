@@ -75,8 +75,9 @@
                 placeholder="Your message..." ></textarea>
             </div>
             <div>
-                <button @click="submitDonationCard" class="w-full text-white py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    Create
+                <button @click="submitDonationCard" class="w-full text-white flex items-center justify-center py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <span v-if="!isCreatingCanLoading">Create</span>
+                    <Icon v-else width="20"  class="animate-spin" icon="ph:spinner-duotone" color="white" />
                 </button>
             </div>
         </div>
@@ -96,6 +97,7 @@ import {
 import { useUserStore } from "../../store/userStore";
 
 const isCreatingCan = ref(false)
+const isCreatingCanLoading = ref(false)
 const donationsCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
 const displayToast = inject('toast')
@@ -119,7 +121,6 @@ async function createCan(){
     try {
         if(props.isUserWalletConnected){
             if(!isCreatingCan.value) return isCreatingCan.value = true;
-          
         } else {
             await userStore.logIn()
             emits('changeUserWalletState')
@@ -140,14 +141,27 @@ function changeAvatarColor(){
         data.avatar_color = input.value
     }
 }
-function submitDonationCard(){
-    if(
-    (props.selectedNetwork === 'Binance-testnet' && userStore.currentUserNetwork === '61') || 
-    (props.selectedNetwork === 'Rinkeby' && userStore.currentUserNetwork == '4')){
-        if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
-        donationsCardsStore.createUserDonationCard(data)
-    } else {
-        return displayToast(`You aren't in the ${props.selectedNetwork} network, please change to the selected testnet `,'error')
+async function submitDonationCard(){
+    try {
+        if(
+        (props.selectedNetwork === 'Binance-testnet' && userStore.currentUserNetworkId === '61') || 
+        (props.selectedNetwork === 'Goerli' && userStore.currentUserNetworkId == '5')){
+            if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
+            isCreatingCanLoading.value = true;
+            await donationsCardsStore.createCan(userStore.currentUserNetworkId,data)
+            displayToast("Can succesfully created!",'success')
+            isCreatingCanLoading.value = false;
+            data.avatar_color = ""
+            data.details = ""
+            data.first_name = ""
+            data.last_name = "";
+        } else {
+            isCreatingCanLoading.value = false;
+            return displayToast(`You aren't in the ${props.selectedNetwork} network, please change to the selected network `,'error')
+        }
+    } catch(error){
+        isCreatingCanLoading.value = false;
+        displayToast(error,'error')
     }
   
 }

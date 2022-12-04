@@ -3,7 +3,7 @@ import deviceType from '../utils/deviceType';
 export const useUserStore = defineStore('user', {
     state: () => ({ 
       user: {} ,
-      currentUserNetwork : ''
+      currentUserNetworkId : ''
     }),
     getters: {
       getUser: (state) => state.user,
