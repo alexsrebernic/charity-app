@@ -78,7 +78,6 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
             return new Promise(async(resolve,reject) => {
                 try {
                     const network = networksData[networkId].name
-                    console.log(network,address)
                     const can = await getDoc(getDocRefFromNetworkTestnet(network,address))
                     if(!can.exists){
                         resolve(null)

@@ -77,7 +77,8 @@ const displayToast = inject('toast')
 const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
     data: Object,
-    isUserWalletConnected: Boolean
+    isUserWalletConnected: Boolean,
+    selectedNetwork: Object,
 }) 
 
 async function fund(){

@@ -9,7 +9,7 @@
         />
       </div>
     </Transition>
-    <WarningHeader />
+    <!-- <WarningHeader /> -->
     <NavigationBar style="z-index: 4;"/>
     <div style="z-index: 3;" class="container max-w-8xl m-auto">
       <router-view></router-view>

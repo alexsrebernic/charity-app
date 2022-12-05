@@ -15,6 +15,7 @@
             :data="ownCardData"
             />
             <DonationCard 
+            v-for="(donation, index) in donations" :key="index"
             @changeUserWalletState="changeUserWalletState" 
             :isUserWalletConnected="isUserWalletConnected" 
             :selectedNetwork="selectedNetwork"
@@ -25,7 +26,7 @@
     </div>
 </template>
 <script setup>
-import { inject, onMounted, watch } from "@vue/runtime-core";
+import { inject, onMounted, reactive, watch } from "@vue/runtime-core";
 import DonationCard from "../DonationCard.vue";
 import UserCreateCard from "../UserCreateCard.vue";
 import OwnCard from "../OwnCard.vue";
@@ -38,12 +39,12 @@ const donationCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
 const isUserWalletConnected = ref(false)
 const userHaveCan = ref(false)
-const selectedNetwork = ref('')
+const selectedNetwork = ref({})
 
 const displayToast = inject('toast')
 const avalaibleNetworks = inject("avalaibleNetworks")
-const donations = ref([])
-const donation = ref({
+const donations = ref([
+{
     owner_address: '0x7b48d3b279645a27f63ecfcef49c71086a626680',
     first_name: "Alex",
     last_name:"Srebernic",
@@ -51,40 +52,49 @@ const donation = ref({
     created_at: '26/7/2022',
     last_donated_address: "0x59583810eb074ccc5c26397c621a27ac11889225",
     details: '¡Hello world¡Hello world¡Hello world¡Hello world¡Hello world!overflow-autooverflow-autooverflow-autooverflow-auto wooverflow-autooverflow-autooverflow-autooverflow-autooverflow-autooverflow-autorld!'
-})
+}
+])
 const ownCardData = ref({})
 
 watch(() => userStore.user,async (newUser) => {
-    if(Object.entries(newUser).length > 0){
-        isUserWalletConnected.value = true
-        const userCan = await donationCardsStore.getCan(userStore.currentUserNetworkId,userStore.user.attributes.ethAddress)
-        if(userCan){
-            ownCardData.value = userCan
-            userHaveCan.value = true
-        } 
-    } else {
-        isUserWalletConnected.value = false
-        userHaveCan.value = false
-    }
+   await checkUser(newUser);
 })
 
 onMounted(async () => {
-    if(Object.entries(userStore.getUser).length > 0){
+   await checkUser(userStore.getUser);
+})
+async function checkUser(user){
+    if(Object.entries(user).length > 0){
         isUserWalletConnected.value = true
-        const userCan = await donationCardsStore.getCan(selectedNetwork,userStore.user.attributes.ethAddress)
-        console.log(selectedNetwork)
+        const userCan = await donationCardsStore.getCan(selectedNetwork.value.id,userStore.user.attributes.ethAddress)
         if(userCan){
             ownCardData.value = userCan
             userHaveCan.value = true
-        } 
+        }  else {
+            ownCardData.value = {}
+            userHaveCan.value = false
+        }
+    } else {
+        isUserWalletConnected.value = false
+        ownCardData.value = false;
+        userHaveCan.value = false
     }
-})
-
+}
 function changeUserWalletState(){
     isUserWalletConnected.value = !isUserWalletConnected.value
 }
-function changeSelectedNetwork(value){
-    selectedNetwork.value = value
+async function changeSelectedNetwork(network){
+    selectedNetwork.value = network
+    if(Object.entries(userStore.user).length > 0){
+        const userCan = await donationCardsStore.getCan(selectedNetwork.value.id,userStore.user.attributes.ethAddress)
+        if(userCan){
+            ownCardData.value = userCan
+            userHaveCan.value = true
+        }  else {
+            ownCardData.value = {}
+            userHaveCan.value = false
+        }
+    }
 }
 
 </script>

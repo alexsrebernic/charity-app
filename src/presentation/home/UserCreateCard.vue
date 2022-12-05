@@ -111,7 +111,7 @@ const data = reactive({
 const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
     isUserWalletConnected: Boolean,
-    selectedNetwork: String
+    selectedNetwork: Object
 })
 watch(() => props.isUserWalletConnected,(value) => {
     if(!value) isCreatingCan.value = false
@@ -143,27 +143,29 @@ function changeAvatarColor(){
 }
 async function submitDonationCard(){
     try {
-        if(
-        (props.selectedNetwork === 'Binance-testnet' && userStore.currentUserNetworkId === '61') || 
-        (props.selectedNetwork === 'Goerli' && userStore.currentUserNetworkId == '5')){
+        if
+        (props.selectedNetwork.id === userStore.currentUserNetworkId){
             if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
             isCreatingCanLoading.value = true;
             await donationsCardsStore.createCan(userStore.currentUserNetworkId,data)
             displayToast("Can succesfully created!",'success')
+            resetInputs()
             isCreatingCanLoading.value = false;
-            data.avatar_color = ""
-            data.details = ""
-            data.first_name = ""
-            data.last_name = "";
         } else {
             isCreatingCanLoading.value = false;
-            return displayToast(`You aren't in the ${props.selectedNetwork} network, please change to the selected network `,'error')
+            return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
         }
     } catch(error){
         isCreatingCanLoading.value = false;
         displayToast(error,'error')
     }
   
+}
+function resetInputs(){
+    data.avatar_color = ""
+    data.details = ""
+    data.first_name = ""
+    data.last_name = "";
 }
 </script>
 <style lang="scss">
