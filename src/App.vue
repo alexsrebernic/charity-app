@@ -23,8 +23,8 @@ import WarningHeader from './presentation/common/WarningHeader.vue';
 import avalaibleNetworks from "./utils/networksData"
 import { ref } from "@vue/reactivity";
 import { inject, onMounted, provide } from 'vue';
-import { connectToFirebaseEmulator } from '../firebase.config';
 import { useUserStore } from './store/userStore';
+import initializeAppUseCase from './useCases/initializeAppUseCase'
 const isToastVisible = ref(false)
 const toastMessage = ref('');
 const toastType = ref('');
@@ -42,11 +42,13 @@ window.ethereum.on("chainChanged", async (chain) => {
   window.location.reload();
 });
 onMounted(async () => {
-  await checkWeb3()
-  if (process.env.NODE_ENV !== 'production' &&
-  process.env.NODE_ENV !== 'test' &&
-  typeof console !== 'undefined'
-  ) connectToFirebaseEmulator()
+  try {
+    await checkWeb3()
+    await initializeAppUseCase()
+  } catch( error ){
+    console.error(error)
+    displayToast(error,'error')
+  }
 })
 
 async function checkWeb3(){

@@ -7,6 +7,7 @@ const getDocRefFromNetworkTestnet = (network,address) =>  doc(db,network,address
 const getNetworkRefCollection = (network) => collection(db,network)
 import {abi} from "../contracts/abis/Factory.json"
 import { ethers } from 'ethers'
+import avalaibleNetworks from '../utils/networksData'
 export const useDonationsCardsStore = defineStore('donations_cards', {
     state: () => (
         { 
@@ -18,12 +19,12 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
         getUserDonationCard(state){
             return (owner_address,network) => state[network].filter(card => card.owner_address == owner_address).pop()
         },
-        getBinanceDonationsCard(state){
-            return state['Binance-testnet']
+        getAllCards(state){
+            return (network) => state[network]
         },
-        getRinkebyDonationsCard(state){
-            return state['Goerli']
-        },
+        getCardsWithoutUserCard(state){
+            return (owner_address,network) => state[network].filter(card => card.owner_address !== owner_address)
+        }
     },
     actions: {
         createCan(networkId,dataCan){
@@ -105,6 +106,7 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
             })
         },
         donateToCan(networkId,can,donor){
+            console.log("Donating to can")
             return new Promise(async (resolve,reject) => {
                 try {
                     const network = networksData[networkId].name
@@ -137,6 +139,17 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                     reject(error)
                 }
             })
+        },
+        async fetchDonationsCards(){
+            console.log("Fetch donations cards...")
+            for(const networkId in avalaibleNetworks){
+                const cards = (await getDocs(getNetworkRefCollection(avalaibleNetworks[networkId].name))).docs
+                cards.forEach(doc => {
+                    this[avalaibleNetworks[networkId].name].push(doc.data());
+                })
+                console.log(this[avalaibleNetworks[networkId].name])
+                
+            }
         }
     }
 })

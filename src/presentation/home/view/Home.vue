@@ -13,6 +13,7 @@
             v-else
             class="mx-auto"
             :data="ownCardData"
+            :selectedNetwork="selectedNetwork"
             />
             <DonationCard 
             v-for="(donation, index) in donations" :key="index"
@@ -58,10 +59,12 @@ const ownCardData = ref({})
 
 watch(() => userStore.user,async (newUser) => {
    await checkUser(newUser);
+   await getDonationsCard()
 })
 
 onMounted(async () => {
    await checkUser(userStore.getUser);
+   await getDonationsCard();
 })
 async function checkUser(user){
     if(Object.entries(user).length > 0){
@@ -80,6 +83,14 @@ async function checkUser(user){
         userHaveCan.value = false
     }
 }
+async function getDonationsCard(){
+    if(Object.entries(userStore.user).length > 0){
+         donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user.attributes.ethAddress,selectedNetwork.value.name)
+    } else {
+        donations.value = donationCardsStore.getAllCards(selectedNetwork.value.name)
+    }
+    console.log(donations.value)
+}
 function changeUserWalletState(){
     isUserWalletConnected.value = !isUserWalletConnected.value
 }
@@ -95,6 +106,7 @@ async function changeSelectedNetwork(network){
             userHaveCan.value = false
         }
     }
+    await getDonationsCard()
 }
 
 </script>

@@ -73,7 +73,7 @@ import { useUserStore } from '../../store/userStore';
 
 const amount = ref(0)
 const displayToast = inject('toast')
-
+const userStore = useUserStore()
 const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
     data: Object,
@@ -85,6 +85,9 @@ async function fund(){
     if(!props.isUserWalletConnected){
         await useUserStore().logIn();
         emits('changeUserWalletState')
+    }
+    if(props.selectedNetwork.id !== userStore.currentUserNetworkId){
+        return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
     }
     if(amount.value == 0) return 
 }
