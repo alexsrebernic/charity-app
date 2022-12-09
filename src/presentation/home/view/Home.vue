@@ -4,7 +4,7 @@
         <div class="mt-6">
         </div>
         <div class="mt-6  gap-y-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            <Transition  :duration="{ enter: 500, leave: 800 }" name="fade" mode="out-in">
+            <Transition  :duration="{ enter: 500, leave: 200 }" name="fade" mode="out-in">
                 <UserCreateCard 
                 @changeUserWalletState="changeUserWalletState"
                 @getDonationsCards="getDonationsCard"  

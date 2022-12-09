@@ -22,7 +22,7 @@
             </div>
             <div class="flex space-x-1 items-center">
                 <span class="font-medium">Total donated: </span>
-                <span class="text-blue-700 font-medium">{{data.total_balance}}$</span>
+                <span class="text-black font-medium"> <span class="text-blue-700">{{data.total_balance}}</span> {{selectedNetwork.token}}</span>
                 <span>
                     <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
                 </span>
@@ -53,7 +53,7 @@
                         rounded-l-lg
                     "
                     id="exampleTel0"
-                    placeholder="$"
+                    :placeholder="`${selectedNetwork.token} Amount`"
                     />
                 </div>
                 <div class="w-1/2">
@@ -75,7 +75,7 @@ import { inject, defineEmits } from '@vue/runtime-core';
 import { useDonationsCardsStore } from '../../store/donationCardsStore';
 import { useUserStore } from '../../store/userStore';
 import ButtonCards from '../common/ButtonCards.vue';
-const amount = ref(0)
+const amount = ref(null)
 const displayToast = inject('toast')
 const userStore = useUserStore()
 const isDonationLoading = ref(false)
@@ -101,7 +101,7 @@ async function fund(){
         if(props.selectedNetwork.id !== userStore.currentUserNetworkId){
             return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
         }
-        if(amount.value == 0) return 
+        if(!amount.value) return 
         isDonationLoading.value = true
         await donationsCardStore.donateToCan(
             props.data,
