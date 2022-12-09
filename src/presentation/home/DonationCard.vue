@@ -10,7 +10,7 @@
                 class="rounded-full"
                 :src=" data.avatar? 
                 data.avatar:
-                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=${data.avatar_color?data.avatar_color:'d1d5da'}`" 
+                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=${data.avatar_color?data.avatar_color.substring(1):'d1d5da'}`" 
                 :alt="`${data.first_name}'s avatar'`">
             </div>
         </div>
@@ -21,11 +21,13 @@
                 </p>
             </div>
             <div class="flex space-x-1 items-center">
-                <span class="font-medium">Total donated: </span>
-                <span class="text-black font-medium"> <span class="text-blue-700">{{data.total_balance}}</span> {{selectedNetwork.token}}</span>
-                <span>
-                    <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
-                </span>
+                <span class="font-medium truncate" title="Total donated:" >Total donated: </span>
+                <span :title="selectedNetwork.token" class="text-black font-medium truncate"> <span class="text-blue-700">{{data.total_balance}}</span> {{selectedNetwork.token}}</span>
+                <QuestionPriceIconVue
+                :amountToken="data.total_balance"
+                :userContractAddress="data.can_address"
+                :networkId="selectedNetwork.id"
+                />
             </div>
         </div>
         <div>
@@ -69,11 +71,11 @@
     </div>
 </template>
 <script setup>
-import { Icon } from '@iconify/vue';
 import { ref } from '@vue/reactivity';
 import { inject, defineEmits } from '@vue/runtime-core';
 import { useDonationsCardsStore } from '../../store/donationCardsStore';
 import { useUserStore } from '../../store/userStore';
+import QuestionPriceIconVue from '../common/QuestionPriceIcon.vue';
 import ButtonCards from '../common/ButtonCards.vue';
 const amount = ref(null)
 const displayToast = inject('toast')

@@ -31,7 +31,7 @@ function getIconClass(){
 }
 const props = defineProps({
     type:String,
-    message:String
+    message:[String,Error]
 });
 </script>
 <style lang="scss">

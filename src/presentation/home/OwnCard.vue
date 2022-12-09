@@ -11,7 +11,7 @@
                 class="rounded-full"
                 :src=" data.avatar? 
                 data.avatar:
-                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=${data.avatar_color?data.avatar_color:'d1d5da'}`" 
+                `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=${data.avatar_color?data.avatar_color.substring(1):'d1d5da'}`" 
                 :alt="`${data.first_name}'s avatar'`">
             </div>
         </div>
@@ -24,12 +24,18 @@
             <div class="flex space-x-1 items-center">
                 <span class="font-medium">Balance: </span>
                 <span class="text-blue-700 font-medium">{{data.current_balance}}$</span>
-                <span>
-                    <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
-                </span>
+                <QuestionPriceIcon
+                :amountToken="data.current_balance"
+                :userContractAddress="data.can_address"
+                :networkId="selectedNetwork.id"
+                />
                 <span title="Total Donated" class="font-medium truncate">Total donated: </span>
-                <span class="text-blue-700 font-medium">{{data.current_balance}}$</span>
-              
+                <span class="text-blue-700 font-medium">{{data.total_balance}}$</span>
+                <QuestionPriceIcon
+                :amountToken="data.total_balance"
+                :userContractAddress="data.can_address"
+                :networkId="selectedNetwork.id"
+                />
             </div>
         </div>
         <div>
@@ -74,23 +80,25 @@ import { Icon } from '@iconify/vue';
 import { ref } from '@vue/reactivity';
 import { inject, defineEmits } from '@vue/runtime-core';
 import { useUserStore } from '../../store/userStore';
-
+import QuestionPriceIcon from '../common/QuestionPriceIcon.vue';
 const amount = ref(0)
 const displayToast = inject('toast')
 
 const emits = defineEmits(['changeUserWalletState'])
 const props = defineProps({
     data: Object,
+    selectedNetwork: Object,
 }) 
 function getCreatedAtDate(date){
     return new Date(Number(date.seconds * 1000)).toLocaleDateString()
 }
 async function withdraw(){
-    if(amount.value == 0) return 
     if(!props.isUserWalletConnected){
         await useUserStore().logIn();
         emits('changeUserWalletState')
     }
+    if(amount.value == 0) return 
+    
 }
 
 

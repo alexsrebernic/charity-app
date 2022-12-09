@@ -95,5 +95,6 @@ box-shadow:
   0px 0px 51px rgba(0, 0, 0, 0.03)
 ;
 }
+/* Tooltip container */
 
 </style>
