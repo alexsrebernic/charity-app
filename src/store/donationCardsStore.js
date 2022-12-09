@@ -126,13 +126,28 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                         current_balance : can.current_balance,
                         donors: can.donors,
                     })
-                    this[network].splice(this[network].findIndex(a => a.address == can.address),1,can);
+                    this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
                     console.log("Donation succesfully executed")
                     resolve(true)
                 } catch(error){
                     reject(error)
                 }
             })
+        },
+        async withdraw(can){
+            const { user, currentUserNetworkId } = useUserStore()
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', [])
+            const userContract = await useUserStore().getUserContract(can.can_address)
+            const response = await userContract.withdraw()
+            await this.listenForTransactionMine(response, provider)
+            const network = networksData[currentUserNetworkId].name
+            can.current_balance = 0;
+            await updateDoc(getDocRefFromNetworkTestnet(network,can.owner_address),{
+                current_balance : can.current_balance,
+            })
+            this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
+            console.log("Withdrawl succesfully executed")
         },
         listenForTransactionMine(transactionResponse, provider) {
             console.log(`Mining ${transactionResponse.hash}`)

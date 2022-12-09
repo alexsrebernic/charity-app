@@ -23,14 +23,14 @@
             </div>
             <div class="flex space-x-1 items-center">
                 <span class="font-medium">Balance: </span>
-                <span class="text-blue-700 font-medium">{{data.current_balance}}$</span>
+                <span :title="selectedNetwork.token" class="text-blue-700 font-medium">{{data.current_balance}}</span>
                 <QuestionPriceIcon
                 :amountToken="data.current_balance"
                 :userContractAddress="data.can_address"
                 :networkId="selectedNetwork.id"
                 />
                 <span title="Total Donated" class="font-medium truncate">Total donated: </span>
-                <span class="text-blue-700 font-medium">{{data.total_balance}}$</span>
+                <span :title="selectedNetwork.token" class="text-blue-700 font-medium "><span></span>{{data.total_balance}} </span>
                 <QuestionPriceIcon
                 :amountToken="data.total_balance"
                 :userContractAddress="data.can_address"
@@ -40,36 +40,15 @@
         </div>
         <div>
             <div class="flex justify-center">
-                <div class="w-1/2">
-                    <input
-                    v-model="amount"
-                    min="1"
-                    type="number"
-                    class="
-                        form-control
-                        block
-                        w-full
-                        px-3
-                        py-1.5
-                        text-base
-                        font-normal
-                        text-gray-700
-                        bg-white bg-clip-padding
-                        border border-solid border-gray-300
-                        transition
-                        ease-in-out
-                        m-0
-                        focus:text-gray-700 focus:bg-white focus:border-blue-700 focus:outline-none
-                        rounded-l-lg
-                    "
-                    id="exampleTel0"
-                    placeholder="$"
+                <div class="w-full ">
+                    <ButtonCards
+                    class="rounded-lg py-2"
+                    :callback="withdraw"
+                    :loading="loading"
+                    :success="success"
+                    :error="error"
+                    text="Withdraw"
                     />
-                </div>
-                <div class="w-1/2">
-                    <button @click="withdraw" class="w-full text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Withdraw
-                    </button>
                 </div>
             </div>
         </div>
@@ -81,10 +60,14 @@ import { ref } from '@vue/reactivity';
 import { inject, defineEmits } from '@vue/runtime-core';
 import { useUserStore } from '../../store/userStore';
 import QuestionPriceIcon from '../common/QuestionPriceIcon.vue';
-const amount = ref(0)
+import ButtonCards from '../common/ButtonCards.vue';
+import { useDonationsCardsStore } from '../../store/donationCardsStore';
 const displayToast = inject('toast')
-
 const emits = defineEmits(['changeUserWalletState'])
+const donationCardStore = useDonationsCardsStore()
+const loading = ref(false)
+const success = ref(false)
+const error = ref(false)
 const props = defineProps({
     data: Object,
     selectedNetwork: Object,
@@ -93,12 +76,30 @@ function getCreatedAtDate(date){
     return new Date(Number(date.seconds * 1000)).toLocaleDateString()
 }
 async function withdraw(){
-    if(!props.isUserWalletConnected){
-        await useUserStore().logIn();
+    try {
+        if(props.data.current_balance == 0) return displayToast("Don't have enough balance to withdraw","error")
+        loading.value= true
+        if(!props.isUserWalletConnected){
+        await useUserStore().connectWallet();
         emits('changeUserWalletState')
+        }
+         await donationCardStore.withdraw(props.data)
+        loading.value= false
+        success.value = true
+        setTimeout(() => {
+            success.value = false
+        }, 2000);
+        displayToast("Withdrawal completed successfully!","success")
+    } catch( e ){
+        displayToast(e.message,'error')
+        loading.value = false
+        error.value = true
+        setTimeout(() => {
+            error.value = false
+        }, 2000);
+        console.error(e)
     }
-    if(amount.value == 0) return 
-    
+
 }
 
 
