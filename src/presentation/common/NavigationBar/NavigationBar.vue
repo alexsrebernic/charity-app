@@ -1,17 +1,17 @@
 <template >
-<nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900  z-20">
+<nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900 ">
   <div class="container flex flex-wrap justify-between items-center mx-auto">
   <a href="/home" class="flex items-center">
       <span class="self-center text-xl font-semibold whitespace-nowrap hover:text-blue-700 transition dark:text-white ">CryptoFund</span>
   </a>
   <div class="flex md:order-2 sm:space-x-2">
-    <div v-if="Object.keys(user || null).length === 0">
+    <div v-if="!userAddress">
       <button  @click="login()" type="button" class="text-white block bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Connect Wallet
       </button>
     </div>
     <div v-else>
-      <button @click="isUserDropdownShowing = !isUserDropdownShowing" v-if="user" class="text-black border shadow-md  bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-none dark:hover:bg-white dark:focus:ring-white dark:text-white" >
-        {{user.attributes.ethAddress.slice(0,6)}}...{{user.attributes.ethAddress.slice(user.attributes.ethAddress.length - 4)}}
+      <button @click="isUserDropdownShowing = !isUserDropdownShowing" v-if="userAddress" class="text-black border shadow-md  bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-none dark:hover:bg-white dark:focus:ring-white dark:text-white" >
+        {{userAddress.slice(0,8)}}...{{userAddress.slice(userAddress - 3)}}
       </button>
       <Transition name="fade">
         <div @click="logout" v-if="isUserDropdownShowing" class="absolute w-32 cursor-pointer text-black border shadow-md  bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-300 my-2 rounded-lg text-sm px-5 py-2.5 text-center  md:mr-0 dark:bg-none dark:hover:bg-white dark:focus:ring-white dark:text-white "  >
@@ -74,7 +74,7 @@
               href="/docs"
               />
             </li>
-            <li v-if="Object.keys(user || null).length > 0">
+            <li v-if="userAddress">
              <button 
              @click="logout"
              class="mobile-nav-link rounded-sm block py-3 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
@@ -94,17 +94,19 @@ import { useUserStore } from "../../../store/userStore";
 import NavLink from "./NavLink.vue";
 const isBurguerMenuShowing = ref(false)
 const isUserDropdownShowing = ref(false)
-const user = ref({})
+const userAddress = ref("")
 const userStore = useUserStore()
 const displayToast = inject("toast")
 
 watch(() => userStore.user, (newUser) => {
-  user.value = newUser
+  userAddress.value = newUser
 })
-
+onMounted(() => {
+  userAddress.value = userStore.user
+})
 async function login(method){
   try {
-    await userStore.logIn(method)
+    await userStore.connectWallet(method)
   } catch ( error ) {
     displayToast( `Something goes wrong when log in user: ${error}`, "error")
     console.error(error)
@@ -112,15 +114,14 @@ async function login(method){
 }
 async function logout() {
   try {
-    console.log
     isBurguerMenuShowing.value = false
     userStore.logOut()
     .finally(() => {
-      user.value = {};
+      userAddress.value = "";
       isUserDropdownShowing.value = false;
     })
   } catch( error ) {
-    displayToast( `Something goes wrong when login out user ${user.value.attributes.ethAddress}: ${error}`,'error')
+    displayToast( `Something goes wrong when login out user ${userAddress.value}: ${error}`,'error')
     console.error(error)
   }
 }

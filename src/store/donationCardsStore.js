@@ -3,11 +3,11 @@ import { setDoc,doc,collection,addDoc,deleteDoc, Timestamp, getDoc, getDocs, upd
 import {db} from "../../firebase.config"
 import { useUserStore } from "../store/userStore"
 import networksData from "../utils/networksData"
+import {abi} from "../contracts/abis/Factory.json"
+import { ethers, Signer } from 'ethers'
+import avalaibleNetworks from '../utils/networksData'
 const getDocRefFromNetworkTestnet = (network,address) =>  doc(db,network,address)
 const getNetworkRefCollection = (network) => collection(db,network)
-import {abi} from "../contracts/abis/Factory.json"
-import { ethers } from 'ethers'
-import avalaibleNetworks from '../utils/networksData'
 export const useDonationsCardsStore = defineStore('donations_cards', {
     state: () => (
         { 
@@ -27,23 +27,23 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
         }
     },
     actions: {
-        createCan(networkId,dataCan){
-            return new Promise(async (resolve,reject) => {
+        async createCan(networkId,dataCan){
                 try {
+                   
                     const {first_name,last_name,avatar_color,details} = dataCan
-                    const owner_address = useUserStore().user.attributes.ethAddress;
+                    const owner_address = useUserStore().user;
                     if(await this.getCan(networkId,owner_address)) return reject("Address already have a can created")
                     const network = networksData[networkId].name;
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     await provider.send('eth_requestAccounts', [])
                     const signer = provider.getSigner()
                     const contractAddress =  networksData[networkId].factoryContractAddress;
-                    const ethUsdPriceFeed = networksData[networkId].ethUsdPriceFeed;
                     const contract = new ethers.Contract(contractAddress, abi, signer)
                     const transactionResponse = await contract.createNewDonee()
                     await this.listenForTransactionMine(transactionResponse, provider)
+                    const can_address = (await transactionResponse.wait()).events[0].args[0]
                     const can = {
-                        can_address : contract.address,
+                        can_address,
                         owner_address,
                         first_name,
                         last_name,
@@ -55,13 +55,12 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                         current_balance: 0,
                     }
                     await setDoc(getDocRefFromNetworkTestnet(network,owner_address),can)
-                    this[network].push(can);
-                    resolve("Can succesfully created!")
+                    this[network] = [can, ...this[network]];
+                    console.log("Can succesfully created!")
                 } catch ( error ){
                     console.error(error)
-                    reject(error)
+                    throw Error(error)
                 }
-            })
         },
         deleteCan(networkId,address){
             return new Promise(async (resolve,reject) => {
@@ -105,20 +104,30 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                 }
             })
         },
-        donateToCan(networkId,can,donor){
+        donateToCan(can,amountDonated){
             console.log("Donating to can")
             return new Promise(async (resolve,reject) => {
                 try {
-                    const network = networksData[networkId].name
-                    can.total_balance = Number(can.total_balance) + Number(donor.amountDonated);
-                    can.current_balance = Number(can.current_balance) + Number(donor.amountDonated);
-                    can.donors = [...can.donors, donor.address]
-                    await updateDoc(getDocRefFromNetworkTestnet(network,can.address),{
+                    const { user, currentUserNetworkId } = useUserStore()
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send('eth_requestAccounts', [])
+                    const userContract = await useUserStore().getUserContract(can.can_address)
+                    const response = await userContract.donate({
+                        value: ethers.utils.parseEther(String(amountDonated)) 
+                    })
+                    await this.listenForTransactionMine(response, provider)
+                    const network = networksData[currentUserNetworkId].name
+                    can.total_balance = Number(can.total_balance) + Number(amountDonated);
+                    can.current_balance = Number(can.current_balance) + Number(amountDonated);
+                    can.donors = [...can.donors, user]
+                    console.log(network)
+                    await updateDoc(getDocRefFromNetworkTestnet(network,can.owner_address),{
                         total_balance : can.total_balance,
                         current_balance : can.current_balance,
                         donors: can.donors,
                     })
                     this[network].splice(this[network].findIndex(a => a.address == can.address),1,can);
+                    console.log("Donation succesfully executed")
                     resolve(true)
                 } catch(error){
                     reject(error)
@@ -147,7 +156,6 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                 cards.forEach(doc => {
                     this[avalaibleNetworks[networkId].name].push(doc.data());
                 })
-                console.log(this[avalaibleNetworks[networkId].name])
                 
             }
         }

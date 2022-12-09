@@ -1,20 +1,25 @@
 <template >
     <div class="md:w-5/6 mx-auto ">
         <SelectNetwork @changeSelectedNetwork="changeSelectedNetwork"/>
+        <div class="mt-6">
+        </div>
         <div class="mt-6  gap-y-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            <UserCreateCard 
-            @changeUserWalletState="changeUserWalletState"  
-            :isUserWalletConnected="isUserWalletConnected"
-            :selectedNetwork="selectedNetwork"
-            class="mx-auto"
-            v-if="!userHaveCan"
-            />
-            <OwnCard
-            v-else
-            class="mx-auto"
-            :data="ownCardData"
-            :selectedNetwork="selectedNetwork"
-            />
+            <Transition  :duration="{ enter: 500, leave: 800 }" name="fade" mode="out-in">
+                <UserCreateCard 
+                @changeUserWalletState="changeUserWalletState"
+                @getDonationsCards="getDonationsCard"  
+                :isUserWalletConnected="isUserWalletConnected"
+                :selectedNetwork="selectedNetwork"
+                class="mx-auto"
+                v-if="!userHaveCan"
+                />
+                <OwnCard
+                v-else
+                class="mx-auto"
+                :data="ownCardData"
+                :selectedNetwork="selectedNetwork"
+                />
+            </Transition>
             <DonationCard 
             v-for="(donation, index) in donations" :key="index"
             @changeUserWalletState="changeUserWalletState" 
@@ -44,32 +49,29 @@ const selectedNetwork = ref({})
 
 const displayToast = inject('toast')
 const avalaibleNetworks = inject("avalaibleNetworks")
-const donations = ref([
-{
-    owner_address: '0x7b48d3b279645a27f63ecfcef49c71086a626680',
-    first_name: "Alex",
-    last_name:"Srebernic",
-    total_donated: 320,
-    created_at: '26/7/2022',
-    last_donated_address: "0x59583810eb074ccc5c26397c621a27ac11889225",
-    details: '¡Hello world¡Hello world¡Hello world¡Hello world¡Hello world!overflow-autooverflow-autooverflow-autooverflow-auto wooverflow-autooverflow-autooverflow-autooverflow-autooverflow-autooverflow-autorld!'
-}
-])
+const donations = ref([])
 const ownCardData = ref({})
 
 watch(() => userStore.user,async (newUser) => {
    await checkUser(newUser);
    await getDonationsCard()
 })
-
+watch(() => donationCardsStore[selectedNetwork.value.name],async (newCards) => {
+    await getDonationsCard()
+    await checkUser(userStore.getUser)
+})
 onMounted(async () => {
    await checkUser(userStore.getUser);
    await getDonationsCard();
 })
+async function getUserBalance(){
+    const amount = await userStore.getUserBalance()
+    return amount
+}
 async function checkUser(user){
-    if(Object.entries(user).length > 0){
+    if(user){
         isUserWalletConnected.value = true
-        const userCan = await donationCardsStore.getCan(selectedNetwork.value.id,userStore.user.attributes.ethAddress)
+        const userCan =  donationCardsStore.getUserDonationCard(user,selectedNetwork.value.name)
         if(userCan){
             ownCardData.value = userCan
             userHaveCan.value = true
@@ -84,20 +86,19 @@ async function checkUser(user){
     }
 }
 async function getDonationsCard(){
-    if(Object.entries(userStore.user).length > 0){
-         donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user.attributes.ethAddress,selectedNetwork.value.name)
+    if(userStore.user){
+         donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user,selectedNetwork.value.name)
     } else {
         donations.value = donationCardsStore.getAllCards(selectedNetwork.value.name)
     }
-    console.log(donations.value)
 }
 function changeUserWalletState(){
     isUserWalletConnected.value = !isUserWalletConnected.value
 }
 async function changeSelectedNetwork(network){
     selectedNetwork.value = network
-    if(Object.entries(userStore.user).length > 0){
-        const userCan = await donationCardsStore.getCan(selectedNetwork.value.id,userStore.user.attributes.ethAddress)
+    if(userStore.user){
+        const userCan = await donationCardsStore.getCan(selectedNetwork.value.id,userStore.user)
         if(userCan){
             ownCardData.value = userCan
             userHaveCan.value = true
@@ -110,6 +111,14 @@ async function changeSelectedNetwork(network){
 }
 
 </script>
-<style lang="">
+<style lang="css">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
 
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>

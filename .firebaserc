@@ -1,7 +1,8 @@
 {
   "projects": {
-    "default": "test-firestore-2e03e",
-    "test": "test-firestore-2e03e"
+    "default": "crypto-fund-dcfe7",
+    "test": "test-firestore-2e03e",
+    "crypto-fund-staging": "crypto-fund-dcfe7"
   },
   "targets": {},
   "etags": {}

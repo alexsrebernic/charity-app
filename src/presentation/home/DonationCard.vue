@@ -3,7 +3,7 @@
         <div class="flex justify-between">
             <div class="">
                 <h1 class="font-bold text-blue-700 text-2xl">{{data.first_name}} {{data.last_name}}</h1>
-                <span class="text-sm font-semibold text-gray-400">Created: {{data.created_at}}</span>
+                <span v-if="data.createdAt" class="text-sm font-semibold text-gray-400">Created: {{getCreatedAtDate(data.createdAt)}}</span>
             </div>
             <div >
                 <img 
@@ -22,7 +22,7 @@
             </div>
             <div class="flex space-x-1 items-center">
                 <span class="font-medium">Total donated: </span>
-                <span class="text-blue-700 font-medium">{{data.total_donated}}$</span>
+                <span class="text-blue-700 font-medium">{{data.total_balance}}$</span>
                 <span>
                     <Icon width="20" icon="codicon:question" class="cursor-pointer hover:text-gray-400 transition"/>
                 </span>
@@ -57,9 +57,12 @@
                     />
                 </div>
                 <div class="w-1/2">
-                    <button @click="fund" class="w-full text-white  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Fund
-                    </button>
+                    <ButtonCards 
+                    :callback="fund"
+                    :loading="isDonationLoading" 
+                    :error="error"
+                    :success="success"
+                    text="Fund" class="rounded-r-lg"/>
                 </div>
             </div>
         </div>
@@ -69,27 +72,56 @@
 import { Icon } from '@iconify/vue';
 import { ref } from '@vue/reactivity';
 import { inject, defineEmits } from '@vue/runtime-core';
+import { useDonationsCardsStore } from '../../store/donationCardsStore';
 import { useUserStore } from '../../store/userStore';
-
+import ButtonCards from '../common/ButtonCards.vue';
 const amount = ref(0)
 const displayToast = inject('toast')
 const userStore = useUserStore()
+const isDonationLoading = ref(false)
+const success = ref(false);
+const error = ref(false);
+const donationsCardStore = useDonationsCardsStore()
 const emits = defineEmits(['changeUserWalletState'])
+
 const props = defineProps({
     data: Object,
     isUserWalletConnected: Boolean,
     selectedNetwork: Object,
 }) 
-
+function getCreatedAtDate(date){
+    return new Date(Number(date.seconds * 1000)).toLocaleDateString()
+}
 async function fund(){
-    if(!props.isUserWalletConnected){
-        await useUserStore().logIn();
+    try {
+        if(!props.isUserWalletConnected){
+        await useUserStore().connectWallet();
         emits('changeUserWalletState')
+        }
+        if(props.selectedNetwork.id !== userStore.currentUserNetworkId){
+            return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
+        }
+        if(amount.value == 0) return 
+        isDonationLoading.value = true
+        await donationsCardStore.donateToCan(
+            props.data,
+            amount.value
+        )
+        amount.value = 0
+        isDonationLoading.value = false
+        success.value = true
+        setTimeout(() => {
+            success.value = false
+        }, 2000);
+    } catch( e ){
+        isDonationLoading.value = false
+        error.value = true
+        setTimeout(() => {
+            error.value = false
+        }, 2000);
+        displayToast(e.message,'error')
     }
-    if(props.selectedNetwork.id !== userStore.currentUserNetworkId){
-        return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
-    }
-    if(amount.value == 0) return 
+   
 }
 
 

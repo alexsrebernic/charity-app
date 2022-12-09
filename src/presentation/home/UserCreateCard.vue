@@ -75,10 +75,14 @@
                 placeholder="Your message..." ></textarea>
             </div>
             <div>
-                <button @click="submitDonationCard" class="w-full text-white flex items-center justify-center py-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  h-full text-center   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    <span v-if="!isCreatingCanLoading">Create</span>
-                    <Icon v-else width="20"  class="animate-spin" icon="ph:spinner-duotone" color="white" />
-                </button>
+                <ButtonCards
+                class="rounded-lg py-2"
+                :callback="submitDonationCard"
+                :loading="isCreatingCanLoading"
+                :success="success"
+                :error="error"
+                text="Create"
+                />
             </div>
         </div>
         <div v-else class="flex items-center cursor-pointer    justify-center h-5/6 flex-col text-white">
@@ -95,11 +99,13 @@ import {
     useDonationsCardsStore
 } from '../../store/donationCardsStore'
 import { useUserStore } from "../../store/userStore";
-
+import ButtonCards from '../common/ButtonCards.vue';
 const isCreatingCan = ref(false)
 const isCreatingCanLoading = ref(false)
 const donationsCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
+const error = ref(false)
+const success = ref(false)
 const displayToast = inject('toast')
 const data = reactive({
     avatar_color:'',
@@ -108,7 +114,7 @@ const data = reactive({
     details:'',
 }) 
 
-const emits = defineEmits(['changeUserWalletState'])
+const emits = defineEmits(['changeUserWalletState','getDonationsCard'])
 const props = defineProps({
     isUserWalletConnected: Boolean,
     selectedNetwork: Object
@@ -122,7 +128,7 @@ async function createCan(){
         if(props.isUserWalletConnected){
             if(!isCreatingCan.value) return isCreatingCan.value = true;
         } else {
-            await userStore.logIn()
+            await userStore.connectWallet()
             emits('changeUserWalletState')
             isCreatingCan.value = true
         }
@@ -149,15 +155,25 @@ async function submitDonationCard(){
             isCreatingCanLoading.value = true;
             await donationsCardsStore.createCan(userStore.currentUserNetworkId,data)
             displayToast("Can succesfully created!",'success')
+            success.value = true
+            setTimeout(() => {
+                success.value = false
+                isCreatingCanLoading.value = false;
+            }, 2000);
             resetInputs()
-            isCreatingCanLoading.value = false;
+            emits('getDonationsCard')
         } else {
             isCreatingCanLoading.value = false;
             return displayToast(`You aren't in the ${props.selectedNetwork.name} network, please change to the selected network `,'error')
         }
-    } catch(error){
+    } catch(e){
         isCreatingCanLoading.value = false;
-        displayToast(error,'error')
+        error.value = true
+        setTimeout(() => {
+            error.value = false
+        }, 2000);
+        displayToast(e.message,'error')
+        
     }
   
 }

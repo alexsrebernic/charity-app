@@ -17,5 +17,8 @@
     "ui": {
       "enabled": true
     }
+  },
+  "extensions": {
+    "moralis-auth": "moralis/moralis-auth@0.1.4"
   }
 }

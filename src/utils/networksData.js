@@ -2,7 +2,7 @@ export default {
     5: {
         name: "Goerli",
         ethUsdPriceFeed: "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e",
-        factoryContractAddress: "0x631e0833233f3D6C712C1116807737D48197b461",
+        factoryContractAddress: "0xEdBa1F38Aa262F6A9AbD8F3b6f8Dd387733F3086",
         id: "5"
     },
     61: {

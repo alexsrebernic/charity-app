@@ -33,6 +33,7 @@ const userStore = useUserStore()
 
 
 window.ethereum.on('accountsChanged', async (accounts) => {
+  console.log(accounts)
   userStore.removeUser()
   await userStore.logOut()
   window.location.reload()
