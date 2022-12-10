@@ -10,8 +10,8 @@ export default {
     61: {
         name: "Binance-testnet",
         ethUsdPriceFeed: "0x143db3CEEfbdfe5631aDD3E50f7614B6ba708BA7",
-        factoryContractAddress: "",
-        JSONRPCProvider: "https://rpc.ankr.com/eth_goerli",
+        factoryContractAddress: "0x631e0833233f3D6C712C1116807737D48197b461",
+        JSONRPCProvider: "https://rpc.ankr.com/bsc_testnet_chapel",
         id: "61",
         token: "BNB"
     }

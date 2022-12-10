@@ -12,7 +12,11 @@
     <!-- <WarningHeader /> -->
     <NavigationBar style="z-index: 4;"/>
     <div style="z-index: 3;" class="container max-w-8xl m-auto">
-      <router-view></router-view>
+      <router-view v-slot="{Component}">
+      <Transition name="fade" mode="out-in">
+        <component :is="Component"></component>
+      </Transition>
+    </router-view>
     </div>
   </main>
 </template>
