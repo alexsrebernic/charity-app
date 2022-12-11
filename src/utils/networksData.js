@@ -5,14 +5,16 @@ export default {
         factoryContractAddress: "0xEdBa1F38Aa262F6A9AbD8F3b6f8Dd387733F3086",
         JSONRPCProvider: "https://rpc.ankr.com/eth_goerli",
         id: "5",
-        token: "GoerliETH"
+        token: "GoerliETH",
+        webSocketProvider:'wss://eth-goerli.g.alchemy.com/v2/EX8B6SyEe1Y4a-vHzc-CYXTBn-NaHvns'
     },
-    61: {
+    97: {
         name: "Binance-testnet",
-        ethUsdPriceFeed: "0x143db3CEEfbdfe5631aDD3E50f7614B6ba708BA7",
+        ethUsdPriceFeed: "0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526",
         factoryContractAddress: "0x631e0833233f3D6C712C1116807737D48197b461",
         JSONRPCProvider: "https://rpc.ankr.com/bsc_testnet_chapel",
-        id: "61",
-        token: "BNB"
+        id: "97",
+        token: "BNB",
+        webSocketProvider:null
     }
 }

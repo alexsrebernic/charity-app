@@ -31,7 +31,7 @@
         </div>
     </div>
 </template>
-<script setup>
+<script  setup>
 import { inject, onMounted, reactive, watch } from "@vue/runtime-core";
 import DonationCard from "../DonationCard.vue";
 import UserCreateCard from "../UserCreateCard.vue";
@@ -40,7 +40,8 @@ import SelectNetwork from "../SelectNetwork.vue";
 import { ref } from "vue";
 import { useUserStore } from "../../../store/userStore";
 import { useDonationsCardsStore } from "../../../store/donationCardsStore";
-
+import watchEvents from '../../../utils/watchEvents'
+// import { utils } from "ethers";
 const donationCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
 const isUserWalletConnected = ref(false)
@@ -63,7 +64,11 @@ watch(() => donationCardsStore[selectedNetwork.value.name],async (newCards) => {
 onMounted(async () => {
    await checkUser(userStore.getUser);
    await getDonationsCard();
+//    await watchEvents(useUserStore.currentUserNetworkId)
 })
+
+
+
 async function getUserBalance(){
     const amount = await userStore.getUserBalance()
     return amount

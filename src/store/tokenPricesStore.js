@@ -18,6 +18,7 @@ export const usePricesStore = defineStore('prices', {
     actions: {
         async fetchPriceOfToken(networkId){
             if (ethereum) {
+                console.log(networkId)
                 const provider = new ethers.providers.JsonRpcProvider(avalaibleNetworks[networkId].JSONRPCProvider)
                 const addr = avalaibleNetworks[networkId].ethUsdPriceFeed
                 const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider)
@@ -25,6 +26,7 @@ export const usePricesStore = defineStore('prices', {
                 let roundData = await priceFeed.latestRoundData();
                 const price = Number((roundData.answer.toString() / Math.pow(10, decimals)).toFixed(2));
                 this.prices[networkId] = price
+                console.log(price)
                 return price;
             } else {
                 throw Error("This web app requires Metamask, please install Metamask")

@@ -1,5 +1,5 @@
 <template >
-        <div @mouseover.once="getAmountInUsd()"  class="tooltip">
+        <div @mouseover="getAmountInUsd()"  class="tooltip">
             <span class="tooltiptext ">
               <Icon  v-if="loading" class="animate-spin mx-auto" width="20"  icon="gg:spinner" color="white" />
               <span v-else>${{amountInUsd}}</span>
@@ -11,7 +11,7 @@
 import { Icon } from '@iconify/vue';
 import {usePricesStore} from '../../store/tokenPricesStore'
 import { ref } from '@vue/reactivity';
-import { inject } from '@vue/runtime-core';
+import { inject, watch } from '@vue/runtime-core';
 const loading = ref(false)
 const amountInUsd = ref('')
 const displayToast = inject('toast')
