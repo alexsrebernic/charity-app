@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 import { setDoc,doc,collection,addDoc,deleteDoc, Timestamp, getDoc, getDocs, updateDoc } from 'firebase/firestore'
 import {db} from "../../firebase.config"
 import { useUserStore } from "../store/userStore"
-import networksData from "../utils/networksData"
+import networksData from "../helpers/networksData"
 import {abi} from "../contracts/abis/Factory.json"
 import { ethers, Signer } from 'ethers'
-import avalaibleNetworks from '../utils/networksData'
+import avalaibleNetworks from '../helpers/networksData'
 const getDocRefFromNetworkTestnet = (network,address) =>  doc(db,network,address)
 const getNetworkRefCollection = (network) => collection(db,network)
 export const useDonationsCardsStore = defineStore('donations_cards', {
@@ -171,8 +171,19 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                 cards.forEach(doc => {
                     this[avalaibleNetworks[networkId].name].push(doc.data());
                 })
-                
             }
+        },
+        async getUpdatedDataFromCan(networkId,address){
+            const network = networksData[networkId].name
+            const can = await this.getCan(networkId,address);
+            console.log(can)
+            this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
+        },
+        async addNewCan(networkId,address){
+            const network = networksData[networkId].name
+            const can = await this.getCan(networkId,address);
+            console.log(can)
+            this[network].push(can)
         }
     }
 })

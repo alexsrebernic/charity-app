@@ -150,7 +150,7 @@ function changeAvatarColor(){
 async function submitDonationCard(){
     try {
         if
-        (props.selectedNetwork.id === userStore.currentUserNetworkId){
+        (props.selectedNetwork.id == userStore.currentUserNetworkId){
             if(!data.first_name || !data.last_name || !data.details) return displayToast('Please fill all the fields!','error')
             isCreatingCanLoading.value = true;
             await donationsCardsStore.createCan(userStore.currentUserNetworkId,data)

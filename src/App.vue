@@ -24,7 +24,7 @@
 import Toast from './presentation/common/Toast/Toast.vue';
 import NavigationBar from './presentation/common/NavigationBar/NavigationBar.vue'
 import WarningHeader from './presentation/common/WarningHeader.vue';
-import avalaibleNetworks from "./utils/networksData"
+import avalaibleNetworks from "./helpers/networksData"
 import { ref } from "@vue/reactivity";
 import { inject, onMounted, provide } from 'vue';
 import { useUserStore } from './store/userStore';
@@ -61,7 +61,7 @@ async function checkWeb3(){
   if(!ethereum || !ethereum.on){
     displayToast("This web app requires Metamask, please install Metamask",'error')
   } else {
-    userStore.currentUserNetworkId = window.ethereum.chainId.slice(2)
+    userStore.currentUserNetworkId = window.ethereum.chainId.slice(2) == 61? 97 : window.ethereum.chainId.slice(2)
   }
 }
 

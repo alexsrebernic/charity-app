@@ -40,8 +40,6 @@ import SelectNetwork from "../SelectNetwork.vue";
 import { ref } from "vue";
 import { useUserStore } from "../../../store/userStore";
 import { useDonationsCardsStore } from "../../../store/donationCardsStore";
-import watchEvents from '../../../utils/watchEvents'
-// import { utils } from "ethers";
 const donationCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
 const isUserWalletConnected = ref(false)
