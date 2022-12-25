@@ -1,5 +1,5 @@
 <template lang="">
-   <button @click="callback" class="
+   <button @click="triggerCallback" class="
    w-full text-white justify-center flex items-center  bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium  text-sm  h-full text-center transition  dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
    :class="{
         'bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700': !loading && !success && !error,
@@ -19,13 +19,17 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 
-defineProps({
+const props = defineProps({
     callback: [Promise, Function],
     loading: Boolean,
     success:Boolean,
     error:Boolean,
     text:String,
 })
+function triggerCallback(){
+  if(props.loading) return
+  props.callback()
+}
 </script>
 
 <style lang="scss">

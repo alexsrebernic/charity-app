@@ -3,7 +3,7 @@ import {abi} from '../contracts/abis/Factory.json'
 import networksData from '../helpers/networksData'
 import { useDonationsCardsStore } from '../store/donationCardsStore'
 import { useUserStore } from '../store/userStore'
-export default () => {
+export default async () => {
     try {
         for(const networkId in networksData){
             const network = networksData[networkId]
@@ -12,11 +12,9 @@ export default () => {
             if(!wbsProvider) return
             const provider = new ethers.providers.WebSocketProvider(wbsProvider);
             const contract = new ethers.Contract(address,abi,provider)
-            contract.on("newDonee", (from,to,value,event) => {
-                const newDoneeAddress = to.args[0];
-                // if(useUserStore().user == newDoneeAddress) return
-                console.log(useUserStore().user == newDoneeAddress)
-                useDonationsCardsStore().addNewCan(networkId,newDoneeAddress)
+            contract.on("newDonee", async (from,to,value,event) => {
+                if(from == useUserStore().user) return
+                useDonationsCardsStore().addNewCan(networkId,from)
             })
         }
     } catch(e){

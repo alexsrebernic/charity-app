@@ -90,7 +90,7 @@ async function checkUser(user){
 }
 async function getDonationsCard(){
     if(userStore.user){
-         donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user,selectedNetwork.value.name)
+        donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user,selectedNetwork.value.name)
     } else {
         donations.value = donationCardsStore.getAllCards(selectedNetwork.value.name)
     }

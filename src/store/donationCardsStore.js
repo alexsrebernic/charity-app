@@ -27,41 +27,6 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
         }
     },
     actions: {
-        async createCan(networkId,dataCan){
-                try {
-                   
-                    const {first_name,last_name,avatar_color,details} = dataCan
-                    const owner_address = useUserStore().user;
-                    if(await this.getCan(networkId,owner_address)) return reject("Address already have a can created")
-                    const network = networksData[networkId].name;
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send('eth_requestAccounts', [])
-                    const signer = provider.getSigner()
-                    const contractAddress =  networksData[networkId].factoryContractAddress;
-                    const contract = new ethers.Contract(contractAddress, abi, signer)
-                    const transactionResponse = await contract.createNewDonee()
-                    await this.listenForTransactionMine(transactionResponse, provider)
-                    const can_address = (await transactionResponse.wait()).events[0].args[0]
-                    const can = {
-                        can_address,
-                        owner_address,
-                        first_name,
-                        last_name,
-                        avatar_color,
-                        details,
-                        donors: [],
-                        createdAt: Timestamp.now(),
-                        total_balance: 0,
-                        current_balance: 0,
-                    }
-                    await setDoc(getDocRefFromNetworkTestnet(network,owner_address),can)
-                    this[network] = [can, ...this[network]];
-                    console.log("Can succesfully created!")
-                } catch ( error ){
-                    console.error(error)
-                    throw Error(error)
-                }
-        },
         deleteCan(networkId,address){
             return new Promise(async (resolve,reject) => {
                 try {
@@ -74,9 +39,17 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                 }
             })
         },
+        pushCan(networkName,can){
+            if(this[networkName].find(a => a.can_address == can.can_address)) return
+            this[networkName] = [...this[networkName], can]
+        },
+        replaceCan(networkName,can){
+            this[networkName].splice(this[networkName].findIndex(a => a.can_address == can.can_address),1,can);
+        },
         getCan(networkId,address){
             return new Promise(async(resolve,reject) => {
                 try {
+                    console.log(networkId,address)
                     const network = networksData[networkId].name
                     const can = await getDoc(getDocRefFromNetworkTestnet(network,address))
                     if(!can.exists){
@@ -104,6 +77,41 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                 }
             })
         },
+        async createCan(networkId,dataCan){
+                try {
+                    const {first_name,last_name,avatar_color,details} = dataCan
+                    const owner_address = useUserStore().user;
+                    if(await this.getCan(networkId,owner_address)) return reject("Address already have a can created")
+                    const networkName = networksData[networkId].name;
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send('eth_requestAccounts', [])
+                    const signer = provider.getSigner()
+                    const contractAddress =  networksData[networkId].factoryContractAddress;
+                    const contract = new ethers.Contract(contractAddress, abi, signer)
+                    const transactionResponse = await contract.createNewDonee()
+                    await this.listenForTransactionMine(transactionResponse, provider)
+                    const response = await transactionResponse.wait()
+                    const can_address = response.events[0].args[1]
+                    const can = {
+                        can_address,
+                        owner_address,
+                        first_name,
+                        last_name,
+                        avatar_color,
+                        details,
+                        donors: [],
+                        createdAt: Timestamp.now(),
+                        total_balance: 0,
+                        current_balance: 0,
+                    }
+                    await setDoc(getDocRefFromNetworkTestnet(networkName,owner_address),can)
+                    this.pushCan(networkName,can)
+                    console.log("Can succesfully created!")
+                } catch ( error ){
+                    console.error(error)
+                    throw Error(error)
+                }
+        },
         donateToCan(can,amountDonated){
             console.log("Donating to can")
             return new Promise(async (resolve,reject) => {
@@ -120,13 +128,11 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
                     can.total_balance = Number(can.total_balance) + Number(amountDonated);
                     can.current_balance = Number(can.current_balance) + Number(amountDonated);
                     can.donors = [...can.donors, user]
-                    console.log(network)
                     await updateDoc(getDocRefFromNetworkTestnet(network,can.owner_address),{
                         total_balance : can.total_balance,
                         current_balance : can.current_balance,
                         donors: can.donors,
                     })
-                    this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
                     console.log("Donation succesfully executed")
                     resolve(true)
                 } catch(error){
@@ -144,9 +150,8 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
             const network = networksData[currentUserNetworkId].name
             can.current_balance = 0;
             await updateDoc(getDocRefFromNetworkTestnet(network,can.owner_address),{
-                current_balance : can.current_balance,
+                current_balance : 0,
             })
-            this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
             console.log("Withdrawl succesfully executed")
         },
         listenForTransactionMine(transactionResponse, provider) {
@@ -166,24 +171,38 @@ export const useDonationsCardsStore = defineStore('donations_cards', {
         },
         async fetchDonationsCards(){
             console.log("Fetch donations cards...")
+            const data = {}
             for(const networkId in avalaibleNetworks){
-                const cards = (await getDocs(getNetworkRefCollection(avalaibleNetworks[networkId].name))).docs
-                cards.forEach(doc => {
-                    this[avalaibleNetworks[networkId].name].push(doc.data());
-                })
+                const networkName = avalaibleNetworks[networkId].name
+                const cardsQuery = (await getDocs(getNetworkRefCollection(avalaibleNetworks[networkId].name))).docs
+                const cards = []
+                for await(const doc of cardsQuery) {
+                    cards.push(doc.data());
+                }
+                this[networkName] = data[networkName] = cards
             }
+            return data
         },
         async getUpdatedDataFromCan(networkId,address){
-            const network = networksData[networkId].name
-            const can = await this.getCan(networkId,address);
-            console.log(can)
-            this[network].splice(this[network].findIndex(a => a.can_address == can.can_address),1,can);
+            const networkName = networksData[networkId].name
+            const check = setInterval( async () => {
+                const can = await this.getCan(networkId,address);
+                if(can){
+                    this.replaceCan(networkName,can)
+                    clearInterval(check)
+                    return
+                }
+            }, 3000);
         },
         async addNewCan(networkId,address){
-            const network = networksData[networkId].name
-            const can = await this.getCan(networkId,address);
-            console.log(can)
-            this[network].push(can)
+            const check = setInterval( async () => {
+                const can = await this.getCan(networkId,address);
+                if(can){
+                    this.pushCan(networksData[networkId].name,can)
+                    clearInterval(check)
+                    return
+                }
+            }, 3000);
         }
     }
 })
