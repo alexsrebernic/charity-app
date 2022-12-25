@@ -1,5 +1,5 @@
 <template >
-    <div class="md:w-5/6 mx-auto ">
+    <div >
         <SelectNetwork @changeSelectedNetwork="changeSelectedNetwork"/>
         <div class="mt-6">
         </div>
