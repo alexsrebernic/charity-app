@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import deviceType from '../utils/deviceType';
 import { ethers } from 'ethers';
 import contractABI from '../contracts/abis/Donee.json'
-import avalaibleNetworks from '../utils/networksData'
+import avalaibleNetworks from '../helpers/networksData'
 import { useDonationsCardsStore } from './donationCardsStore';
 export const useUserStore = defineStore('user', {
     state: () => ({ 

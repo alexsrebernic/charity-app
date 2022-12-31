@@ -1,5 +1,5 @@
 <template >
-    <div class="md:w-5/6 mx-auto ">
+    <div class="mb-12">
         <SelectNetwork @changeSelectedNetwork="changeSelectedNetwork"/>
         <div class="mt-6">
         </div>
@@ -40,8 +40,6 @@ import SelectNetwork from "../SelectNetwork.vue";
 import { ref } from "vue";
 import { useUserStore } from "../../../store/userStore";
 import { useDonationsCardsStore } from "../../../store/donationCardsStore";
-import watchEvents from '../../../utils/watchEvents'
-// import { utils } from "ethers";
 const donationCardsStore = useDonationsCardsStore()
 const userStore = useUserStore()
 const isUserWalletConnected = ref(false)
@@ -50,7 +48,7 @@ const selectedNetwork = ref({})
 
 const displayToast = inject('toast')
 const avalaibleNetworks = inject("avalaibleNetworks")
-const donations = ref([])
+const donations = ref([{},{}])
 const ownCardData = ref({})
 
 watch(() => userStore.user,async (newUser) => {
@@ -64,7 +62,7 @@ watch(() => donationCardsStore[selectedNetwork.value.name],async (newCards) => {
 onMounted(async () => {
    await checkUser(userStore.getUser);
    await getDonationsCard();
-//    await watchEvents(useUserStore.currentUserNetworkId)
+  
 })
 
 
@@ -92,7 +90,7 @@ async function checkUser(user){
 }
 async function getDonationsCard(){
     if(userStore.user){
-         donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user,selectedNetwork.value.name)
+        donations.value = donationCardsStore.getCardsWithoutUserCard(userStore.user,selectedNetwork.value.name)
     } else {
         donations.value = donationCardsStore.getAllCards(selectedNetwork.value.name)
     }
