@@ -24,5 +24,4 @@ dist-ssr
 *.sw?
 
 *.env
-src/helpers/networksData.js
 firebase.config.js

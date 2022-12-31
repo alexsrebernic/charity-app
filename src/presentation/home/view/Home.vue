@@ -1,5 +1,5 @@
 <template >
-    <div >
+    <div class="mb-12">
         <SelectNetwork @changeSelectedNetwork="changeSelectedNetwork"/>
         <div class="mt-6">
         </div>
@@ -48,7 +48,7 @@ const selectedNetwork = ref({})
 
 const displayToast = inject('toast')
 const avalaibleNetworks = inject("avalaibleNetworks")
-const donations = ref([])
+const donations = ref([{},{}])
 const ownCardData = ref({})
 
 watch(() => userStore.user,async (newUser) => {
@@ -62,7 +62,7 @@ watch(() => donationCardsStore[selectedNetwork.value.name],async (newCards) => {
 onMounted(async () => {
    await checkUser(userStore.getUser);
    await getDonationsCard();
-//    await watchEvents(useUserStore.currentUserNetworkId)
+  
 })
 
 
